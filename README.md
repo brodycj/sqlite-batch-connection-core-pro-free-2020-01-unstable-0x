@@ -41,6 +41,9 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 - Background threading would need to be done in a higher-level component.
 - The required `scc_init()` initialization function should be called from the main thread upon startup, is __NOT__ thread-safe.
 - Some build and run-time options used by the cordova-sqlite-storage plugin that were needed for extra safety against possible database corruption are missing in this preview.
+- The `sqlite-connection-core.h` API header file and Java interface class do not have documentation comments.
+- Formal documentation of the API is missing here.
+- Some of the Cordova demo code needs better variable names and likely some other forms of code cleanup.
 
 ## Samples
 
