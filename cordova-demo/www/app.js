@@ -12,7 +12,27 @@ function log (text) {
 function onReady () {
   log('deviceready event received')
 
-  window.openDatabaseConnection(':memory:', 2, openCallback)
+  // for memory database:
+  // window.openDatabaseConnection(':memory:', 2, openCallback)
+
+  // for SQLite database file:
+  window.sqliteStorageFile.resolveAbsolutePath(
+    {
+      name: 'demo.db',
+      // TEMPORARY & DEPRECATED value, as needed for iOS & macOS ("osx"):
+      location: 2
+    },
+    function (path) {
+      log('database file path: ' + path)
+
+      // SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
+      // ref: https://www.sqlite.org/c3ref/open.html
+      const flags = 6
+
+      // open with SQLite file path & flags:
+      window.openDatabaseConnection(path, flags, openCallback)
+    }
+  )
 }
 
 function openCallback (connectionId) {

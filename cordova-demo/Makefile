@@ -16,6 +16,7 @@ prepare-plugin: $(SQLITE_AMALGAMATION)/sqlite3.c
 
 prepare-app: prepare-plugin
 	cordova plugin add ./cordova-sqlite-demo-plugin
+	cordova plugin add cordova-sqlite-storage-file
 
 clean:
 	rm -rf node_modules package-lock.json platforms plugins

@@ -46,7 +46,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ## Some known limitations
 
-- primarily tested with in-memory databases (<https://www.sqlite.org/inmemorydb.html>)
+- In case of Apache Cordova, a helper plugin such as `cordova-sqlite-storage-file` should be used to resolve an absolute database file path before opening it.
 - not able to close database connection and release internal resources
 - hard limit of 5000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building
 - The API was not designed to support parallel database access through the same database connection. The workaround is to open multiple SQLite connections to the same database file name.
@@ -220,6 +220,8 @@ column index: 1
 
 ### Apache Cordova demo app
 
+Demonstrates using accessing a database file on Apache Cordova, with a little help from `cordova-sqlite-storage-file`:
+
 ```js
 document.addEventListener('deviceready', onReady)
 
@@ -235,7 +237,27 @@ function log (text) {
 function onReady () {
   log('deviceready event received')
 
-  window.openDatabaseConnection(':memory:', 2, openCallback)
+  // for memory database:
+  // window.openDatabaseConnection(':memory:', 2, openCallback)
+
+  // for SQLite database file:
+  window.sqliteStorageFile.resolveAbsolutePath(
+    {
+      name: 'demo.db',
+      // TEMPORARY & DEPRECATED value, as needed for iOS & macOS ("osx"):
+      location: 2
+    },
+    function (path) {
+      log('database file path: ' + path)
+
+      // SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
+      // ref: https://www.sqlite.org/c3ref/open.html
+      const flags = 6
+
+      // open with SQLite file path & flags:
+      window.openDatabaseConnection(path, flags, openCallback)
+    }
+  )
 }
 
 function openCallback (connectionId) {
