@@ -1,5 +1,5 @@
-function openDatabaseConnection (filename, flags, cb) {
-  cordova.exec(cb, null, 'SQLiteDemo', 'openDatabaseConnection', [
+function openDatabaseConnection (filename, flags, cb, errorCallback) {
+  cordova.exec(cb, errorCallback, 'SQLiteDemo', 'openDatabaseConnection', [
     filename,
     flags
   ])

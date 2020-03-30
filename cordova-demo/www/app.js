@@ -38,6 +38,24 @@ function onReady () {
 function openCallback (connectionId) {
   log('connection id: ' + connectionId)
 
+  // ERROR TEST - file name with incorrect flags:
+  window.openDatabaseConnection(
+    'dummy.db',
+    0,
+    function (_ignored) {
+      log('FAILURE - unexpected open success callback received')
+    },
+    function (e) {
+      log('OK - received error callback as expected for incorrect open call')
+
+      // CONTINUE with batch demo, with the correct connectionId:
+      batchDemo(connectionId)
+    }
+  )
+}
+
+function batchDemo (connectionId) {
+  log('starting batch demo for connectionId: ' + connectionId)
   window.executeBatch(
     connectionId,
     [

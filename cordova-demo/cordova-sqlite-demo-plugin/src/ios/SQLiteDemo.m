@@ -27,6 +27,15 @@
 
   const int connection_id = scc_open_connection(filename, flags);
 
+  if (connection_id < 0) {
+    CDVPluginResult * openErrorResult =
+      [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
+                        messageAsString: @"open error"];
+    [self.commandDelegate sendPluginResult: openErrorResult
+                                callbackId: commandInfo.callbackId];
+    return;
+  }
+
   CDVPluginResult * openResult =
     [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
                          messageAsInt: connection_id];
