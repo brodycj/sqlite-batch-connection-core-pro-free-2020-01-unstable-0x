@@ -33,10 +33,24 @@ class SCCoreGlueTest {
     }
   }
 
-  static void test1() {
-    System.out.println("test 1");
+  static int
+  testOpenConnection(final String test, final String name, final int flags) {
+    System.out.println(test);
 
-    final int connection = SCCoreGlue.scc_open_connection(":memory:", 2);
+    return SCCoreGlue.scc_open_connection(name, flags);
+  }
+
+  static int testOpenMemoryConnection(final String test) {
+    return testOpenConnection(test, ":memory:", 2);
+  }
+
+  static int testOpenFileConnection(final String test, final String name) {
+    return testOpenConnection(test, name, 6);
+  }
+
+  static void test1() {
+    final int connection = testOpenMemoryConnection("test 1");
+
     assertTrue(connection > 0);
 
     assertEquals(0, // SQLite OK
@@ -78,9 +92,8 @@ class SCCoreGlueTest {
   }
 
   static void test2() {
-    System.out.println("test 2");
+    final int connection = testOpenMemoryConnection("test 2");
 
-    final int connection = SCCoreGlue.scc_open_connection(":memory:", 2);
     assertTrue(connection > 0);
 
     assertEquals(0, // SQLite OK
@@ -145,9 +158,8 @@ class SCCoreGlueTest {
   }
 
   static void test3() {
-    System.out.println("test 3");
+    final int connection = testOpenMemoryConnection("test 3");
 
-    final int connection = SCCoreGlue.scc_open_connection(":memory:", 2);
     assertTrue(connection > 0);
 
     assertEquals(0, // SQLite OK
@@ -222,9 +234,8 @@ class SCCoreGlueTest {
   }
 
   static void test4() {
-    System.out.println("test 4");
+    final int connection = testOpenMemoryConnection("test 4");
 
-    final int connection = SCCoreGlue.scc_open_connection(":memory:", 2);
     assertTrue(connection > 0);
 
     assertEquals(0, // SQLite OK
@@ -322,9 +333,8 @@ class SCCoreGlueTest {
   }
 
   static void test5() {
-    System.out.println("test 5");
+    final int connection = testOpenMemoryConnection("test 5");
 
-    final int connection = SCCoreGlue.scc_open_connection(":memory:", 2);
     assertTrue(connection > 0);
 
     // syntax error:
@@ -348,9 +358,8 @@ class SCCoreGlueTest {
   }
 
   static void test6() {
-    System.out.println("test 6");
+    final int connection = testOpenMemoryConnection("test 6");
 
-    final int connection = SCCoreGlue.scc_open_connection(":memory:", 2);
     assertTrue(connection > 0);
 
     assertEquals(0, // SQLite OK
@@ -370,10 +379,9 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test7() {
-    System.out.println("test 7");
+  static void test11() {
+    final int connection = testOpenFileConnection("test 11", "test11.db");
 
-    final int connection = SCCoreGlue.scc_open_connection(":memory:", 2);
     assertTrue(connection > 0);
 
     assertEquals(0, SCCoreGlue.scc_get_total_changes(connection));
@@ -508,6 +516,13 @@ class SCCoreGlueTest {
       );
   }
 
+  static void test21() {
+    // INCORRECT call with incorrect flags:
+    final int connection = testOpenConnection("test 21", "dummy.db", 0);
+    // EXPECTED to indicate an error:
+    assertTrue(connection < 0);
+  }
+
   public static void main(String [] args) {
     test1();
     test2();
@@ -515,7 +530,8 @@ class SCCoreGlueTest {
     test4();
     test5();
     test6();
-    test7();
+    test11();
+    test21();
   }
 
   static {

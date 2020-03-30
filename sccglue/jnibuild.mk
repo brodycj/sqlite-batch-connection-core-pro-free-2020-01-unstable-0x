@@ -21,11 +21,14 @@ jnilib: $(SQLITE_AMALGAMATION)/sqlite3.c
 
 $(JNI_LIB_FILE): jnilib
 
-jnitest: $(JNI_LIB_FILE)
+jnitestclean:
+	rm -rf test*.db
+
+jnitest: $(JNI_LIB_FILE) jnitestclean
 	javac -sourcepath java java/SCCoreGlueTest.java
 	java -cp java SCCoreGlueTest
 
-jniclean:
+jniclean: jnitestclean
 	rm -rf *.jar
 	rm -rf java/*.class
 	rm -rf java/io/sqlc/*.class
