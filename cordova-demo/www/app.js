@@ -24,6 +24,7 @@ function openCallback (connectionId) {
       ['SELECT ?, -?, LOWER(?), UPPER(?)', [null, 123.456789, 'ABC', 'Text']],
       ['SLCT 1', []],
       ['SELECT ?', ['OK', 'out of bounds parameter']],
+      ['DROP TABLE IF EXISTS Testing', []],
       ['CREATE TABLE Testing (data NOT NULL)', []],
       ["INSERT INTO Testing VALUES ('test data')", []],
       ['INSERT INTO Testing VALUES (null)', []],
