@@ -60,16 +60,31 @@
     } \
   } while(0)
 
-static int get_memory_test_connection(const char * test_func) {
-  printf("running %s\n", test_func);
-
+static void test_init() {
   scc_init();
+}
 
-  return scc_open_connection(":memory:", 2);
+static int test_open_connection(const char * test, const char * name, int flags)
+{
+  printf("testing %s\n", test);
+
+  return scc_open_connection(name, flags);
+}
+
+static int test_open_memory_connection(const char * test) {
+  return test_open_connection(test, ":memory:", 2);
+}
+
+static int test_open_file_connection(const char * test, const char * name) {
+  // SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
+  // ref: https://www.sqlite.org/c3ref/open.html
+  const int flags = 6;
+
+  return test_open_connection(test, name, flags);
 }
 
 static void test01() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -88,7 +103,7 @@ static void test01() {
 }
 
 static void test02() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -109,7 +124,7 @@ static void test02() {
 }
 
 static void test03() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -148,7 +163,7 @@ static void test03() {
 }
 
 static void test04() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -186,7 +201,7 @@ static void test04() {
 }
 
 static void test05() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -246,7 +261,7 @@ static void test05() {
 }
 
 static void test06() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -310,7 +325,7 @@ static void test06() {
 }
 
 static void test07() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -369,7 +384,7 @@ static void test07() {
 }
 
 static void test08() {
-  const int connection_id = get_memory_test_connection(__func__);
+  const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -427,8 +442,8 @@ static void test08() {
     );
 }
 
-static void test10() {
-  const int connection_id = get_memory_test_connection(__func__);
+static void test11() {
+  const int connection_id = test_open_file_connection(__func__, "test11.db");
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -512,7 +527,7 @@ static void test10() {
     TEST_ASSERT_INT_EQUALS(0, // SQLite OK
       scc_begin_statement(connection_id,
         "INSERT INTO Testing VALUES ('test data')"
-	)
+        )
       );
 
     TEST_ASSERT_INT_EQUALS(101, // SQLite done
@@ -571,8 +586,8 @@ static void test10() {
   }
 }
 
-static void test11() {
-  const int connection_id = get_memory_test_connection(__func__);
+static void test12() {
+  const int connection_id = test_open_file_connection(__func__, "test12.db");
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -600,7 +615,7 @@ static void test11() {
     TEST_ASSERT_INT_EQUALS(0, // SQLite OK
       scc_begin_statement(connection_id,
         "INSERT INTO Testing VALUES ('test data')"
-	)
+        )
       );
 
     TEST_ASSERT_INT_EQUALS(101, // SQLite done
@@ -642,7 +657,7 @@ static void test11() {
     TEST_ASSERT_INT_EQUALS(0, // SQLite OK
       scc_begin_statement(connection_id,
         "INSERT INTO Testing VALUES ('test 2')"
-	)
+        )
       );
 
     TEST_ASSERT_INT_EQUALS(101, // SQLite done
@@ -664,7 +679,7 @@ static void test11() {
     TEST_ASSERT_INT_EQUALS(0, // SQLite OK
       scc_begin_statement(connection_id,
         "INSERT INTO Testing VALUES ('test 3')"
-	)
+        )
       );
 
     TEST_ASSERT_INT_EQUALS(101, // SQLite done
@@ -683,7 +698,15 @@ static void test11() {
   }
 }
 
+static void test21() {
+  // INCORRECT call with incorrect flags:
+  const int connection_id = test_open_connection(__func__, "dummy.db", 0);
+  // EXPECTED to indicate an error:
+  TEST_ASSERT_ALWAYS(connection_id < 0);
+}
+
 int main(int argc, char ** argv) {
+  test_init();
   test01();
   test02();
   test03();
@@ -692,6 +715,7 @@ int main(int argc, char ** argv) {
   test06();
   test07();
   test08();
-  test10();
   test11();
+  test12();
+  test21();
 }
