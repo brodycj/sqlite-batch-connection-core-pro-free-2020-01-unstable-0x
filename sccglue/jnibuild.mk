@@ -1,5 +1,7 @@
 
-include ../SQLite.mk
+include ../sqLite-download.mk
+
+include ../sqLite-build.mk
 
 include scclib.mk
 
@@ -15,7 +17,7 @@ jnilib: $(SQLITE_AMALGAMATION)/sqlite3.c
 	# THANKS FOR GUIDANCE:
 	# https://gist.github.com/DmitrySoshnikov/8b1599a5197b5469c8cc07025f600fdb
 	echo Java home is here: `$(GET_MAC_JAVA_HOME)`
-	cc $(JNI_C_SOURCE) -o $(JNI_LIB_FILE) -shared -I`$(GET_MAC_JAVA_HOME)`/include -I`$(GET_MAC_JAVA_HOME)`/include/darwin -I$(SQLITE_AMALGAMATION) -I$(SCCLIB_SOURCE_DIR)
+	cc $(JNI_C_SOURCE) $(SQLITE_CFLAGS) -o $(JNI_LIB_FILE) -shared -I`$(GET_MAC_JAVA_HOME)`/include -I`$(GET_MAC_JAVA_HOME)`/include/darwin -I$(SQLITE_AMALGAMATION) -I$(SCCLIB_SOURCE_DIR)
 
 $(JNI_LIB_FILE): jnilib
 

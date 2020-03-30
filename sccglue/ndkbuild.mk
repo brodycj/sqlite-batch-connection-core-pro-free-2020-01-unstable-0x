@@ -1,4 +1,3 @@
-
 # based on Makefile from:
 # https://github.com/sqlg/SQLiteGlue-core
 
@@ -23,7 +22,7 @@ GLUEGEN_REMOVE_JNI_ORIG := rm -rf $(GLUEGEN_FIX_JNI_FILE).orig
 
 NDK_JAR_FILENAME := sqlite-connection-core-glue.jar
 
-include ../SQLite.mk
+include ../sqlite-download.mk
 
 include scclib.mk
 

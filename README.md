@@ -1,12 +1,24 @@
 # SQLite batch connection support preview 2020-01
 
-Author: Christopher J. Brody <chris.brody+brodybits@gmail.com>
+**Author:** Christopher J. Brody <mailto:chris.brody+brodybits@gmail.com>
 
-LICENSE: MIT with commercial license option
+**License:** MIT with commercial license option available
+
+**IMPORTANT CORRUPTION NOTICE 1:** SQLite database corruption is possible if accessed from multiple libraries, for example using both this library and built-in `android.sqlite.database` on Android ref:
+- <https://ericsink.com/entries/multiple_sqlite_problem.html>
+- <https://www.sqlite.org/faq.html#q5>
+- <https://github.com/xpbrew/cordova-sqlite-storage/issues/626>
+
+**IMPORTANT CORRUPTION NOTICE 2:** It is **highly** recommended to use `-DSQLITE_DEFAULT_SYNCHRONOUS=3` build setting to be extra-durable against crashes and power loss ref:
+- <https://github.com/xpbrew/cordova-sqlite-storage-help/issues/34>
+- <https://github.com/xpbrew/cordova-sqlite-storage/issues/736>
+- <http://sqlite.1065341.n5.nabble.com/Is-WAL-mode-more-robust-against-corruption-td99624.html>
+
+## About
 
 Low-level SQLite connection library for C, C++, Objective-C, and Java
 
-to support SQLite batch processing in higher-level app frameworks such as Cordova
+to support SQLite batch processing in higher-level app frameworks such as Apache Cordova
 
 with demonstration of use in an extremely simple Cordova plugin for mobile apps in JavaScript
 
@@ -34,13 +46,13 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ## Some known limitations
 
-- only tested with in-memory databases (<https://www.sqlite.org/inmemorydb.html>)
+- primarily tested with in-memory databases (<https://www.sqlite.org/inmemorydb.html>)
 - not able to close database connection and release internal resources
-- hard limit of 5000 open SQLite database connections, which is due to the design
+- hard limit of 5000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building
 - The API was not designed to support parallel database access through the same database connection. The workaround is to open multiple SQLite connections to the same database file name.
+- A limited number of historical SQLite features are disabled since the `SQLITE_DBCONFIG_DEFENSIVE` option is enabled (unless `NO_SCC_DBCONFIG_DEFENSIVE` is defined when building) ref: <https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive>
 - Background threading would need to be done in a higher-level component.
 - The required `scc_init()` initialization function should be called from the main thread upon startup, is __NOT__ thread-safe.
-- Some build and run-time options used by the cordova-sqlite-storage plugin that were needed for extra safety against possible database corruption are missing in this preview.
 - The `sqlite-connection-core.h` API header file and Java interface class do not have documentation comments.
 - Formal documentation of the API is missing here.
 - Some of the Cordova demo code needs better variable names and likely some other forms of code cleanup.
@@ -206,7 +218,7 @@ column index: 1
   double column value: -123.456789
 ```
 
-### Cordova demo app
+### Apache Cordova demo app
 
 ```js
 document.addEventListener('deviceready', onReady)

@@ -1,5 +1,4 @@
-
-include ../SQLite.mk
+include ../sqlite-download.mk
 
 all:
 	echo 'all target not supported' && exit 1

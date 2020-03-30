@@ -1,11 +1,12 @@
+include ../sqlite-download.mk
 
-include ../SQLite.mk
+include ../sqlite-build.mk
 
 all:
 	echo 'all not supported' && exit 1
 
 test: $(SQLITE_AMALGAMATION)/sqlite3.c
-	cc ctest_all.c -I$(SQLITE_AMALGAMATION) -I.. -o test.out
+	cc ctest_all.c $(SQLITE_CFLAGS) -I$(SQLITE_AMALGAMATION) -I.. -o test.out
 	./test.out
 
 $(SQLITE_AMALGAMATION)/sqlite3.c:
@@ -15,5 +16,5 @@ $(SQLITE_AMALGAMATION)/sqlite3.c:
 clean:
 	rm -rf *.out
 
-distclean:
-	rm -rf *.out sqlite-*
+distclean: clean
+	rm -rf sqlite-*

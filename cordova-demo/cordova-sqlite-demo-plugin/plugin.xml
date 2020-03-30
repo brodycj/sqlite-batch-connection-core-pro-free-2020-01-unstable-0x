@@ -33,7 +33,14 @@
     </config-file>
     <source-file src="src/ios/SQLiteDemo.m" />
     <header-file src="dependencies/sqlite3.h" />
-    <source-file src="dependencies/sqlite3.c" />
+    <source-file
+      src="dependencies/sqlite3.c"
+      compiler-flags="
+        -DSQLITE_DEFAULT_SYNCHRONOUS=3
+        -DSQLITE_THREADSAFE=1
+        -DHAVE_USLEEP
+        -DHAVE_UTIME
+        " />
     <header-file src="dependencies/sqlite-connection-core.h" />
     <source-file src="dependencies/sqlite-connection-core.c" />
   </platform>
@@ -46,7 +53,14 @@
     </config-file>
     <source-file src="src/ios/SQLiteDemo.m" />
     <header-file src="dependencies/sqlite3.h" />
-    <source-file src="dependencies/sqlite3.c" />
+    <source-file
+      src="dependencies/sqlite3.c"
+      compiler-flags="
+        -DSQLITE_DEFAULT_SYNCHRONOUS=3
+        -DSQLITE_THREADSAFE=1
+        -DHAVE_USLEEP
+        -DHAVE_UTIME
+        " />
     <header-file src="dependencies/sqlite-connection-core.h" />
     <source-file src="dependencies/sqlite-connection-core.c" />
   </platform>

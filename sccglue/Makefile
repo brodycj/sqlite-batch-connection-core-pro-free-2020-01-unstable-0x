@@ -1,5 +1,4 @@
-
-include ../SQLite.mk
+include ../sqlite-download.mk
 
 include scclib.mk
 

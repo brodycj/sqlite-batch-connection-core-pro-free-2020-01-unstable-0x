@@ -12,9 +12,15 @@
 
 #include "sqlite3.h"
 
-#define MAX_SCC_RECORD_COUNT 5000
+#define DEFAULT_MAX_SCC_CONNECTIONS 5000
 
-#define FIRST_RECORD_ID 1
+#ifdef SCC_MAXIMUM_CONNECTIONS
+#define MAX_SCC_RECORD_COUNT SCC_MAXIMUM_CONNECTIONS
+#else
+#define MAX_SCC_RECORD_COUNT DEFAULT_MAX_SCC_CONNECTIONS
+#endif
+
+#define FIRST_SCC_RECORD_ID 1
 
 bool is_initialized = false;
 
@@ -30,6 +36,12 @@ sqlite3_mutex * _open_mutex = NULL;
   sqlite3_mutex_leave(_open_mutex); \
 } while (false)
 
+// General SCC record comment(s):
+// It is not expected for multiple threads to require access
+// from the *same* SCC record in parallel.
+// Multi-threaded access should be done from different SCC connections.
+// Keeping the _st_mutex lock for an entire read or write option
+// is not expected to cause any potential issues.
 
 typedef struct scc_record_s {
   sqlite3 * db;
@@ -47,23 +59,7 @@ typedef struct scc_record_s {
 
 static struct scc_record_s scc_record_list[MAX_SCC_RECORD_COUNT] = { NULL };
 
-static int _scc_record_count = FIRST_RECORD_ID;
-
-static int get_open_connection_id()
-{
-  START_OPEN_MUTEX();
-
-  int connection_id = -1;
-
-  if (_scc_record_count < MAX_SCC_RECORD_COUNT) {
-    connection_id = _scc_record_count;
-    ++_scc_record_count;
-  }
-
-  END_OPEN_MUTEX();
-
-  return connection_id;
-}
+static int _scc_record_count = FIRST_SCC_RECORD_ID;
 
 /**
  * NOT expected to be thread-safe, should be run in the main thread
@@ -79,28 +75,57 @@ void scc_init()
 int scc_open_connection(const char * filename, int flags)
 {
   int connection_id = -1;
+  sqlite3 * db = NULL;
+  int open_result = SQLITE_ERROR;
 
   if (!is_initialized) {
     // BOGUS
     return -1;
-  } else if ((connection_id = get_open_connection_id()) == -1) {
-    // BOGUS
-    return -1;
-  } else {
-    sqlite3 * db = NULL;
+  }
 
-    const int open_result = sqlite3_open_v2(filename, &db, flags, NULL);
+  START_OPEN_MUTEX();
+
+  if (_scc_record_count < MAX_SCC_RECORD_COUNT) {
+    connection_id = _scc_record_count;
+    ++_scc_record_count;
+  }
+
+  if (connection_id != -1) {
+    open_result = sqlite3_open_v2(filename, &db, flags, NULL);
+
+#ifndef NO_SCC_DBCONFIG_DEFENSIVE
+    // extra-safe ref:
+    // - https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive
+    // - https://www.sqlite.org/releaselog/3_26_0.html
+    // - https://github.com/xpbrew/cordova-sqlite-storage-help/issues/34#issuecomment-597821628
+    // with a 4th argument needed ref:
+    // - http://sqlite.1065341.n5.nabble.com/sqlite3-db-config-documentation-issue-td106755.html
+    if (open_result == SQLITE_OK) {
+      open_result = sqlite3_db_config(db, SQLITE_DBCONFIG_DEFENSIVE, 1, NULL);
+
+      // just in case:
+      if (open_result != SQLITE_OK) {
+        sqlite3_close(db);
+      }
+    }
+#endif
 
     if (open_result != SQLITE_OK) {
-      return -open_result;
-    } else {
-      scc_record_list[connection_id].db = db;
-      scc_record_list[connection_id]._st_mutex =
-        sqlite3_mutex_alloc(SQLITE_MUTEX_RECURSIVE);
-      scc_record_list[connection_id]._st = NULL;
-      return connection_id;
+      // release the internal resource:
+      --_scc_record_count;
     }
   }
+
+  END_OPEN_MUTEX();
+
+  if (open_result == SQLITE_OK) {
+    scc_record_list[connection_id].db = db;
+    scc_record_list[connection_id]._st_mutex =
+      sqlite3_mutex_alloc(SQLITE_MUTEX_RECURSIVE);
+    scc_record_list[connection_id]._st = NULL;
+  }
+
+  return (open_result == SQLITE_OK) ? connection_id : -open_result;
 }
 
 int scc_begin_statement(int connection_id, const char * statement)
