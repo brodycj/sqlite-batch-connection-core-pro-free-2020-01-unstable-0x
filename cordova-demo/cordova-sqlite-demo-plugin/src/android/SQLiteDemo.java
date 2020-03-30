@@ -121,14 +121,14 @@ public class SQLiteDemo extends CordovaPlugin {
             result.put("rows", rows);
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);
-	  } else if (sr == 101) {
+          } else if (sr == 101) {
             JSONObject result = new JSONObject();
             result.put("status", 0); // REPORT SQLite OK
             result.put("total_changes", SCCoreGlue.scc_get_total_changes(mydbc));
             result.put("last_insert_rowid", SCCoreGlue.scc_get_last_insert_rowid(mydbc));
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);
-	  } else {
+          } else {
             JSONObject result = new JSONObject();
             result.put("status", 1); // REPORT SQLite
             result.put("message", SCCoreGlue.scc_get_last_error_message(mydbc));

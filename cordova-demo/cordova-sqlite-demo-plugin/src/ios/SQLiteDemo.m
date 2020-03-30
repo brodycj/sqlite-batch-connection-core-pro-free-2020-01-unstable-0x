@@ -27,11 +27,11 @@
 
   const int connection_id = scc_open_connection(filename, flags);
 
-  CDVPluginResult * testResult =
+  CDVPluginResult * openResult =
     [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-			 messageAsInt: connection_id];
+                         messageAsInt: connection_id];
 
-  [self.commandDelegate sendPluginResult: testResult
+  [self.commandDelegate sendPluginResult: openResult
                               callbackId: commandInfo.callbackId];
 }
 
@@ -148,11 +148,11 @@
     scc_end_statement(connection_id);
   }
 
-  CDVPluginResult * testResult =
+  CDVPluginResult * batchResult =
     [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
                        messageAsArray: ra];
 
-  [self.commandDelegate sendPluginResult: testResult
+  [self.commandDelegate sendPluginResult: batchResult
                               callbackId: commandInfo.callbackId];
 }
 
