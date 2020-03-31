@@ -9,16 +9,13 @@ function log (text) {
   console.log(text)
 }
 
-function onReady () {
-  log('deviceready event received')
+const DEMO_DATABASE_NAME = 'demo.db'
 
-  // for memory database:
-  // window.openDatabaseConnection(':memory:', 2, openCallback)
-
-  // for SQLite database file:
+// utility function:
+function openFileDatabaseConnection (name, openCallback) {
   window.sqliteStorageFile.resolveAbsolutePath(
     {
-      name: 'demo.db',
+      name: name,
       // TEMPORARY & DEPRECATED value, as needed for iOS & macOS ("osx"):
       location: 2
     },
@@ -35,8 +32,15 @@ function onReady () {
   )
 }
 
+function onReady () {
+  log('deviceready event received')
+
+  // for SQLite database file:
+  openFileDatabaseConnection(DEMO_DATABASE_NAME, openCallback)
+}
+
 function openCallback (connectionId) {
-  log('connection id: ' + connectionId)
+  log('open connection id: ' + connectionId)
 
   // ERROR TEST - file name with incorrect flags:
   window.openDatabaseConnection(
@@ -55,7 +59,7 @@ function openCallback (connectionId) {
 }
 
 function batchDemo (connectionId) {
-  log('starting batch demo for connectionId: ' + connectionId)
+  log('starting batch demo for connection id: ' + connectionId)
   window.executeBatch(
     connectionId,
     [
@@ -80,4 +84,16 @@ function batchCallback (batchResults) {
   // show batch results in JSON string format (on all platforms)
   log('received batch results')
   log(JSON.stringify(batchResults))
+
+  startReaderDemo()
+}
+
+function startReaderDemo () {
+  openFileDatabaseConnection(DEMO_DATABASE_NAME, function (id) {
+    log('read from another connection id: ' + id)
+
+    window.executeBatch(id, [['SELECT * FROM Testing', []]], function (res) {
+      log(JSON.stringify(res))
+    })
+  })
 }
