@@ -54,40 +54,44 @@
 
   NSArray * data = [_args objectAtIndex: 1];
 
-  NSMutableArray * ra = [NSMutableArray arrayWithCapacity: 0];
+  NSMutableArray * results = [NSMutableArray arrayWithCapacity: 0];
 
-  for (int ii=0; ii < [data count]; ++ii) {
-    NSArray * saa = [data objectAtIndex:ii];
+  for (int i=0; i < [data count]; ++i) {
+    NSArray * entry = [data objectAtIndex:i];
 
-    NSString * st = [saa objectAtIndex: 0];
+    NSString * statement = [entry objectAtIndex: 0];
 
-    NSArray * aa = [saa objectAtIndex: 1];
+    NSArray * bind = [entry objectAtIndex: 1];
 
-    const int rc1 = scc_begin_statement(connection_id, [st cString]);
+    int prepareResult =
+      scc_begin_statement(connection_id, [statement cString]);
 
-    int bindResult = 0;
+    if (prepareResult == 0) {
+      for (int j=0; j < [bind count]; ++j) {
+        NSObject * bindValue = [bind objectAtIndex: j];
 
-    for (int i=0; i < [aa count]; ++i) {
-      NSObject * bindValue = [aa objectAtIndex: i];
-
-      if (bindValue == nil) {
-        bindResult = scc_bind_null(connection_id, 1 + i);
-      } else if ([bindValue isKindOfClass: [NSNumber class]]) {
-        // TBD UIWebView vs WKWebView
-        if ([(NSNumber *)bindValue objCType][0] == 'q') {
-          bindResult = scc_bind_long(connection_id, 1 + i, [(NSNumber *)bindValue longValue]);
+        if (bindValue == nil) {
+          prepareResult = scc_bind_null(connection_id, 1 + j);
+        } else if ([bindValue isKindOfClass: [NSNumber class]]) {
+          // TBD UIWebView vs WKWebView
+          if ([(NSNumber *)bindValue objCType][0] == 'q') {
+            prepareResult = scc_bind_long(connection_id, 1 + j,
+              [(NSNumber *)bindValue longValue]);
+          } else {
+            prepareResult = scc_bind_double(connection_id, 1 + j,
+              [(NSNumber *)bindValue doubleValue]);
+          }
+        } else if ([bindValue isKindOfClass: [NSString class]]) {
+          prepareResult = scc_bind_text(connection_id, 1 + j,
+              [(NSString *)bindValue cString]);
         } else {
-          bindResult = scc_bind_double(connection_id, 1 + i, [(NSNumber *)bindValue doubleValue]);
+          prepareResult = scc_bind_null(connection_id, 1 + j);
         }
-      } else if ([bindValue isKindOfClass: [NSString class]]) {
-        bindResult = scc_bind_text(connection_id, 1 + i, [(NSString *)bindValue cString]);
-      } else {
-        bindResult = scc_bind_null(connection_id, 1 + i);
       }
     }
 
-    if (rc1 != 0 || bindResult != 0) {
-      [ra addObject: @{
+    if (prepareResult != 0) {
+      [results addObject: @{
         @"status": @1,
         @"message": [NSString stringWithUTF8String:
           scc_get_last_error_message(connection_id)]
@@ -98,54 +102,52 @@
       continue;
     }
 
-    int rc2 = scc_step(connection_id);
+    int stepResult = scc_step(connection_id);
 
-    if (rc2 == 100) {
-      const int cc = scc_get_column_count(connection_id);
+    if (stepResult == 100) {
+      const int columnCount = scc_get_column_count(connection_id);
 
       NSMutableArray * columns = [NSMutableArray arrayWithCapacity: 0];
 
-      for (int ci = 0; ci < cc; ++ci) {
+      for (int j = 0; j < columnCount; ++j) {
         NSString * columnNameAsString =
-          [NSString stringWithUTF8String: scc_get_column_name(connection_id, ci)];
+          [NSString stringWithUTF8String: scc_get_column_name(connection_id, j)];
         [columns addObject: columnNameAsString];
       }
 
-      NSMutableArray * rra = [NSMutableArray arrayWithCapacity: 0];
-
-      int nextrc;
+      NSMutableArray * rows = [NSMutableArray arrayWithCapacity: 0];
 
       do {
         NSMutableArray * row = [NSMutableArray arrayWithCapacity: 0];
 
-        for (int c = 0; c < cc; ++c) {
-          const int columnType = scc_get_column_type(connection_id, c);
+        for (int j = 0; j < columnCount; ++j) {
+          const int columnType = scc_get_column_type(connection_id, j);
 
           if (columnType == SCC_COLUMN_TYPE_NULL) {
             [row addObject: [NSNull null]];
           } else if (columnType == SCC_COLUMN_TYPE_INTEGER) {
             NSNumber * columnNumberValue =
-              [NSNumber numberWithLongLong: scc_get_column_long(connection_id, c)];
+              [NSNumber numberWithLongLong: scc_get_column_long(connection_id, j)];
             [row addObject: columnNumberValue];
           } else if (columnType == SCC_COLUMN_TYPE_FLOAT) {
             NSNumber * columnNumberValue =
-              [NSNumber numberWithDouble: scc_get_column_double(connection_id, c)];
+              [NSNumber numberWithDouble: scc_get_column_double(connection_id, j)];
             [row addObject: columnNumberValue];
           } else {
             NSString * columnStringValue =
-              [NSString stringWithUTF8String: scc_get_column_text(connection_id, c)];
+              [NSString stringWithUTF8String: scc_get_column_text(connection_id, j)];
             [row addObject: columnStringValue];
           }
         }
 
-        [rra addObject: row];
+        [rows addObject: row];
 
-        nextrc = scc_step(connection_id);
-      } while(nextrc == 100);
+        stepResult = scc_step(connection_id);
+      } while(stepResult == 100);
 
-      [ra addObject: @{@"status":@0, @"columns": columns, @"rows": rra}];
-    } else if (rc2 == 101) {
-      [ra addObject: @{
+      [results addObject: @{@"status":@0, @"columns": columns, @"rows": rows}];
+    } else if (stepResult == 101) {
+      [results addObject: @{
         @"status": @0,
         @"total_changes": [NSNumber numberWithInteger:
           scc_get_total_changes(connection_id)],
@@ -153,7 +155,7 @@
           scc_get_last_insert_rowid(connection_id)]
       }];
     } else {
-      [ra addObject: @{
+      [results addObject: @{
         @"status": @1,
         @"message": [NSString stringWithUTF8String:
           scc_get_last_error_message(connection_id)]
@@ -165,7 +167,7 @@
 
   CDVPluginResult * batchResult =
     [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-                       messageAsArray: ra];
+                       messageAsArray: results];
 
   [self.commandDelegate sendPluginResult: batchResult
                               callbackId: commandInfo.callbackId];
