@@ -237,7 +237,7 @@ function log (text) {
 const DEMO_DATABASE_NAME = 'demo.db'
 
 // utility function:
-function openFileDatabaseConnection (name, openCallback) {
+function openFileDatabaseConnection (name, openCallback, errorCallback) {
   window.sqliteStorageFile.resolveAbsolutePath(
     {
       name: name,
@@ -252,7 +252,7 @@ function openFileDatabaseConnection (name, openCallback) {
       const flags = 6
 
       // open with SQLite file path & flags:
-      window.openDatabaseConnection(path, flags, openCallback)
+      window.openDatabaseConnection(path, flags, openCallback, errorCallback)
     }
   )
 }
@@ -261,7 +261,9 @@ function onReady () {
   log('deviceready event received')
 
   // for SQLite database file:
-  openFileDatabaseConnection(DEMO_DATABASE_NAME, openCallback)
+  openFileDatabaseConnection(DEMO_DATABASE_NAME, openCallback, function (error) {
+    log('UNEXPECTED OPEN ERROR: ' + error)
+  })
 }
 
 function openCallback (connectionId) {
@@ -314,13 +316,19 @@ function batchCallback (batchResults) {
 }
 
 function startReaderDemo () {
-  openFileDatabaseConnection(DEMO_DATABASE_NAME, function (id) {
-    log('read from another connection id: ' + id)
+  openFileDatabaseConnection(
+    DEMO_DATABASE_NAME,
+    function (id) {
+      log('read from another connection id: ' + id)
 
-    window.executeBatch(id, [['SELECT * FROM Testing', []]], function (res) {
-      log(JSON.stringify(res))
-    })
-  })
+      window.executeBatch(id, [['SELECT * FROM Testing', []]], function (res) {
+        log(JSON.stringify(res))
+      })
+    },
+    function (error) {
+      log('UNEXPECTED OPEN ERROR: ' + error)
+    }
+  )
 }
 ```
 
