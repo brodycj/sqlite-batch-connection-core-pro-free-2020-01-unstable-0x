@@ -4,6 +4,8 @@
 
 **License:** MIT with commercial license option available
 
+**IMPORTANT UPGRADE NOTICE:** It is highly recommended to avoid breaking schema changes, database file name changes, and database directory path changes. Upgrades need to account for any old schema versions and database file paths that may still be in use. It is possible for users to upgrade at any time, even after many years.
+
 **IMPORTANT CORRUPTION NOTICE 1:** SQLite database corruption is possible if accessed from multiple libraries, for example using both this library and built-in `android.sqlite.database` on Android ref:
 - <https://ericsink.com/entries/multiple_sqlite_problem.html>
 - <https://www.sqlite.org/faq.html#q5>
