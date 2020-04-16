@@ -34,6 +34,29 @@ function openFileDatabaseConnection (name, openCallback, errorCallback) {
   )
 }
 
+function openCacheFileDatabaseConnection (name, openCallback, errorCallback) {
+  window.resolveLocalFileSystemURL(
+    // portable across Android, iOS, & macOS ("osx"):
+    cordova.file.cacheDirectory,
+    function (entry) {
+      const dataDirectoryUrl = entry.toURL()
+
+      log('data directory url: ' + dataDirectoryUrl)
+
+      // hacky, working solution:
+      const path = dataDirectoryUrl.substring(7) + name
+
+      log('database cache file path: ' + path)
+
+      window.openDatabaseConnection(
+        { path: path, flags: OPEN_DATABASE_FLAGS },
+        openCallback,
+        errorCallback
+      )
+    }
+  )
+}
+
 function onReady () {
   log('deviceready event received')
 
@@ -101,7 +124,33 @@ function startReaderDemo () {
 
       window.executeBatch(id, [['SELECT * FROM Testing', []]], function (res) {
         log(JSON.stringify(res))
+        startCacheFileDemo()
       })
+    },
+    function (error) {
+      log('UNEXPECTED OPEN ERROR: ' + error)
+    }
+  )
+}
+
+function startCacheFileDemo () {
+  openCacheFileDatabaseConnection(
+    DATABASE_FILE_NAME,
+    function (id) {
+      log('cache file database connection id: ' + id)
+
+      window.executeBatch(
+        id,
+        [
+          ['DROP TABLE IF EXISTS Testing', []],
+          ['CREATE TABLE Testing (data NOT NULL)', []],
+          ["INSERT INTO Testing VALUES ('test data')", []],
+          ['SELECT * FROM Testing', []]
+        ],
+        function (results) {
+          log(JSON.stringify(results))
+        }
+      )
     },
     function (error) {
       log('UNEXPECTED OPEN ERROR: ' + error)
