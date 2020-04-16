@@ -251,8 +251,7 @@ function openFileDatabaseConnection (name, openCallback, errorCallback) {
       log('database file path: ' + path)
 
       window.openDatabaseConnection(
-        path,
-        OPEN_DATABASE_FLAGS,
+        { path: path, flags: OPEN_DATABASE_FLAGS },
         openCallback,
         errorCallback
       )
@@ -276,8 +275,7 @@ function openCallback (connectionId) {
 
   // ERROR TEST - file name with incorrect flags:
   window.openDatabaseConnection(
-    'dummy.db',
-    0,
+    { path: 'dummy.db', flags: 0 },
     function (_ignored) {
       log('FAILURE - unexpected open success callback received')
     },

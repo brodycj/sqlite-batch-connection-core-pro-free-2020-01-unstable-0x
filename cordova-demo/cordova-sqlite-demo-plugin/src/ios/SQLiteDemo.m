@@ -21,9 +21,11 @@
 {
   NSArray * _args = commandInfo.arguments;
 
-  const char * filename = [(NSString *)[_args objectAtIndex: 0] cString];
+  NSDictionary * options = (NSDictionary *)[_args objectAtIndex: 0];
 
-  const int flags = [(NSNumber *)[_args objectAtIndex: 1] intValue];
+  const char * filename = [(NSString *)[options valueForKey: @"path"] cString];
+
+  const int flags = [(NSNumber *)[options valueForKey: @"flags"] intValue];
 
   const int connection_id = scc_open_connection(filename, flags);
 

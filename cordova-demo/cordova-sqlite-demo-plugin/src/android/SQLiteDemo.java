@@ -24,10 +24,13 @@ public class SQLiteDemo extends CordovaPlugin {
 
   static private void openDatabaseConnection(JSONArray args, CallbackContext cbc) {
     try {
-      final String filename = args.getString(0);
-      final int flags = args.getInt(1);
+      final JSONObject options = args.getJSONObject(0);
 
-      final int mydbc = SCCoreGlue.scc_open_connection(filename, flags);
+      final String pathname = options.getString("path");
+
+      final int flags = options.getInt("flags");
+
+      final int mydbc = SCCoreGlue.scc_open_connection(pathname, flags);
 
       if (mydbc < 0) {
         cbc.error("open error: " + -mydbc);
