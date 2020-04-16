@@ -8,8 +8,8 @@ import org.json.*;
 
 public class SQLiteDemo extends CordovaPlugin {
   @Override
-  public boolean execute(String a, JSONArray data, CallbackContext cbc) {
-    switch(a) {
+  public boolean execute(String method, JSONArray data, CallbackContext cbc) {
+    switch(method) {
       case "openDatabaseConnection":
         openDatabaseConnection(data, cbc);
         break;
@@ -22,7 +22,8 @@ public class SQLiteDemo extends CordovaPlugin {
     return true;
   }
 
-  static private void openDatabaseConnection(JSONArray args, CallbackContext cbc) {
+  static private void
+  openDatabaseConnection(JSONArray args, CallbackContext cbc) {
     try {
       final JSONObject options = args.getJSONObject(0);
 
@@ -53,81 +54,83 @@ public class SQLiteDemo extends CordovaPlugin {
       final int count = data.length();
 
       for (int i=0; i<count; ++i) {
-        JSONArray sa = data.getJSONArray(i);
+        JSONArray entry = data.getJSONArray(i);
 
-        String s = sa.getString(0);
+        String s = entry.getString(0);
 
         if (SCCoreGlue.scc_begin_statement(mydbc, s) != 0) {
           JSONObject result = new JSONObject();
-          result.put("status", 1); // REPORT SQLite
+          result.put("status", 1); // REPORT SQLite ERROR 1
           result.put("message", SCCoreGlue.scc_get_last_error_message(mydbc));
           results.put(result);
         } else {
-          JSONArray aa = sa.getJSONArray(1);
+          JSONArray bind = entry.getJSONArray(1);
 
-          final int aalength = aa.length();
+          final int bindCount = bind.length();
 
-          int br = 0; // SQLite OK
+          int bindResult = 0; // SQLite OK
 
-          for (int ai = 0; ai < aalength; ++ai) {
-            final Object o = aa.get(ai);
+          for (int j = 0; j < bindCount; ++j) {
+            final Object o = bind.get(j);
 
             if (o instanceof Integer || o instanceof Long) {
-              br = SCCoreGlue.scc_bind_long(mydbc, 1 + ai, aa.optLong(ai));
+              bindResult =
+                SCCoreGlue.scc_bind_long(mydbc, 1 + j, bind.optLong(j));
             } else if (o instanceof Number) {
-              br = SCCoreGlue.scc_bind_double(mydbc, 1 + ai, aa.optDouble(ai));
+              bindResult =
+                SCCoreGlue.scc_bind_double(mydbc, 1 + j, bind.optDouble(j));
             } else if (o instanceof String) {
-              br = SCCoreGlue.scc_bind_text(mydbc, 1 + ai, o.toString());
+              bindResult =
+                SCCoreGlue.scc_bind_text(mydbc, 1 + j, o.toString());
             } else {
-              br = SCCoreGlue.scc_bind_null(mydbc, 1 + ai);
+              bindResult =
+                SCCoreGlue.scc_bind_null(mydbc, 1 + j);
             }
           }
 
-          if (br != 0) {
+          if (bindResult != 0) {
             JSONObject result = new JSONObject();
-            result.put("status", 1); // REPORT SQLite
+            result.put("status", 1); // REPORT SQLite ERROR 1
             result.put("message", SCCoreGlue.scc_get_last_error_message(mydbc));
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);
             continue;
           }
 
-          final int sr = SCCoreGlue.scc_step(mydbc);
+          int stepResult = SCCoreGlue.scc_step(mydbc);
 
-          if (sr == 100) {
-            final int cc = SCCoreGlue.scc_get_column_count(mydbc);
+          if (stepResult == 100) {
+            final int columnCount = SCCoreGlue.scc_get_column_count(mydbc);
 
             JSONArray columns = new JSONArray();
 
-            for (int ci=0; ci < cc; ++ci) {
-              columns.put(SCCoreGlue.scc_get_column_name(mydbc, ci));
+            for (int j=0; j < columnCount; ++j) {
+              columns.put(SCCoreGlue.scc_get_column_name(mydbc, j));
             }
 
             JSONArray rows = new JSONArray();
 
-            int sr2;
-
             do {
               JSONArray row = new JSONArray();
 
-              for (int c=0; c < cc; ++c) {
-                final int ct = SCCoreGlue.scc_get_column_type(mydbc, c);
+              for (int col=0; col < columnCount; ++col) {
+                final int type = SCCoreGlue.scc_get_column_type(mydbc, col);
 
-                if (ct == SCCoreGlue.SCC_COLUMN_TYPE_INTEGER) {
-                  row.put(SCCoreGlue.scc_get_column_long(mydbc, c));
-                } else if (ct == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT) {
-                  row.put(SCCoreGlue.scc_get_column_double(mydbc, c));
-                } else if (ct == SCCoreGlue.SCC_COLUMN_TYPE_NULL) {
+                if (type == SCCoreGlue.SCC_COLUMN_TYPE_INTEGER) {
+                  row.put(SCCoreGlue.scc_get_column_long(mydbc, col));
+                } else if (type == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT) {
+                  row.put(SCCoreGlue.scc_get_column_double(mydbc, col));
+                } else if (type == SCCoreGlue.SCC_COLUMN_TYPE_NULL) {
                   row.put(JSONObject.NULL);
                 } else {
-                  row.put(SCCoreGlue.scc_get_column_text(mydbc, c));
+                  row.put(SCCoreGlue.scc_get_column_text(mydbc, col));
                 }
               }
 
               rows.put(row);
 
-              sr2 = SCCoreGlue.scc_step(mydbc);
-            } while (sr2 == 100);
+              stepResult = SCCoreGlue.scc_step(mydbc);
+            } while (stepResult == 100);
 
             JSONObject result = new JSONObject();
             result.put("status", 0); // REPORT SQLite OK
@@ -135,7 +138,7 @@ public class SQLiteDemo extends CordovaPlugin {
             result.put("rows", rows);
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);
-          } else if (sr == 101) {
+          } else if (stepResult == 101) {
             JSONObject result = new JSONObject();
             result.put("status", 0); // REPORT SQLite OK
             result.put("total_changes", SCCoreGlue.scc_get_total_changes(mydbc));
@@ -144,7 +147,7 @@ public class SQLiteDemo extends CordovaPlugin {
             SCCoreGlue.scc_end_statement(mydbc);
           } else {
             JSONObject result = new JSONObject();
-            result.put("status", 1); // REPORT SQLite
+            result.put("status", 1); // REPORT SQLite ERROR 1
             result.put("message", SCCoreGlue.scc_get_last_error_message(mydbc));
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);
