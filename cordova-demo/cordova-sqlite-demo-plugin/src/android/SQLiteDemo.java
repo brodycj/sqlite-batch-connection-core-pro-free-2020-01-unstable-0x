@@ -92,27 +92,32 @@ public class SQLiteDemo extends CordovaPlugin {
           final int sr = SCCoreGlue.scc_step(mydbc);
 
           if (sr == 100) {
+            final int cc = SCCoreGlue.scc_get_column_count(mydbc);
+
+            JSONArray columns = new JSONArray();
+
+            for (int ci=0; ci < cc; ++ci) {
+              columns.put(SCCoreGlue.scc_get_column_name(mydbc, ci));
+            }
+
             JSONArray rows = new JSONArray();
 
             int sr2;
 
             do {
-              JSONObject row = new JSONObject();
-
-              final int cc = SCCoreGlue.scc_get_column_count(mydbc);
+              JSONArray row = new JSONArray();
 
               for (int c=0; c < cc; ++c) {
-                final String c1 = SCCoreGlue.scc_get_column_name(mydbc, c);
                 final int ct = SCCoreGlue.scc_get_column_type(mydbc, c);
 
                 if (ct == SCCoreGlue.SCC_COLUMN_TYPE_INTEGER) {
-                  row.put(c1, SCCoreGlue.scc_get_column_long(mydbc, c));
+                  row.put(SCCoreGlue.scc_get_column_long(mydbc, c));
                 } else if (ct == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT) {
-                  row.put(c1, SCCoreGlue.scc_get_column_double(mydbc, c));
+                  row.put(SCCoreGlue.scc_get_column_double(mydbc, c));
                 } else if (ct == SCCoreGlue.SCC_COLUMN_TYPE_NULL) {
-                  row.put(c1, JSONObject.NULL);
+                  row.put(JSONObject.NULL);
                 } else {
-                  row.put(c1, SCCoreGlue.scc_get_column_text(mydbc, c));
+                  row.put(SCCoreGlue.scc_get_column_text(mydbc, c));
                 }
               }
 
@@ -123,6 +128,7 @@ public class SQLiteDemo extends CordovaPlugin {
 
             JSONObject result = new JSONObject();
             result.put("status", 0); // REPORT SQLite OK
+            result.put("columns", columns);
             result.put("rows", rows);
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);

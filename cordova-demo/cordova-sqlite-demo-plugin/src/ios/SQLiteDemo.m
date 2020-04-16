@@ -99,45 +99,49 @@
     int rc2 = scc_step(connection_id);
 
     if (rc2 == 100) {
+      const int cc = scc_get_column_count(connection_id);
+
+      NSMutableArray * columns = [NSMutableArray arrayWithCapacity: 0];
+
+      for (int ci = 0; ci < cc; ++ci) {
+        NSString * columnNameAsString =
+          [NSString stringWithUTF8String: scc_get_column_name(connection_id, ci)];
+        [columns addObject: columnNameAsString];
+      }
+
       NSMutableArray * rra = [NSMutableArray arrayWithCapacity: 0];
 
       int nextrc;
 
       do {
-        NSMutableDictionary * rro =
-          [NSMutableDictionary dictionaryWithCapacity: 0];
-
-        const int cc = scc_get_column_count(connection_id);
+        NSMutableArray * row = [NSMutableArray arrayWithCapacity: 0];
 
         for (int c = 0; c < cc; ++c) {
-          NSString * columnNameAsString =
-            [NSString stringWithUTF8String: scc_get_column_name(connection_id, c)];
-
           const int columnType = scc_get_column_type(connection_id, c);
 
           if (columnType == SCC_COLUMN_TYPE_NULL) {
-            [rro setValue: [NSNull null] forKey: columnNameAsString];
+            [row addObject: [NSNull null]];
           } else if (columnType == SCC_COLUMN_TYPE_INTEGER) {
             NSNumber * columnNumberValue =
               [NSNumber numberWithLongLong: scc_get_column_long(connection_id, c)];
-            [rro setValue: columnNumberValue forKey: columnNameAsString];
+            [row addObject: columnNumberValue];
           } else if (columnType == SCC_COLUMN_TYPE_FLOAT) {
             NSNumber * columnNumberValue =
               [NSNumber numberWithDouble: scc_get_column_double(connection_id, c)];
-            [rro setValue: columnNumberValue forKey: columnNameAsString];
+            [row addObject: columnNumberValue];
           } else {
             NSString * columnStringValue =
               [NSString stringWithUTF8String: scc_get_column_text(connection_id, c)];
-            [rro setValue: columnStringValue forKey: columnNameAsString];
+            [row addObject: columnStringValue];
           }
         }
 
-        [rra addObject: rro];
+        [rra addObject: row];
 
         nextrc = scc_step(connection_id);
       } while(nextrc == 100);
 
-      [ra addObject: @{@"status":@0, @"rows": rra}];
+      [ra addObject: @{@"status":@0, @"columns": columns, @"rows": rra}];
     } else if (rc2 == 101) {
       [ra addObject: @{
         @"status": @0,
