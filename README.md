@@ -394,9 +394,8 @@ first set in JSON string format (reformatted by `prettier-standard`):
 [
   {
     "status": 0,
-    "rows": [
-      { "?": null, "-?": -123.456789, "LOWER(?)": "abc", "UPPER(?)": "TEXT" }
-    ]
+    "columns": ["?", "-?", "LOWER(?)", "UPPER(?)"],
+    "rows": [[null, -123.456789, "abc", "TEXT"]]
   },
   { "status": 1, "message": "near \"SLCT\": syntax error" },
   { "status": 1, "message": "column index out of range" },
@@ -409,9 +408,10 @@ first set in JSON string format (reformatted by `prettier-standard`):
   { "status": 0, "total_changes": 4, "last_insert_rowid": 2 },
   {
     "status": 0,
-    "rows": [{ "data": "test data 2" }, { "data": "test data 3" }]
+    "columns": ["data"],
+    "rows": [["test data 2"], ["test data 3"]]
   },
-  { "status": 0, "rows": [{ "'xyz'": "xyz" }] }
+  { "status": 0, "columns": ["'xyz'"], "rows": [["xyz"]] }
 ]
 ```
 
@@ -421,7 +421,8 @@ second set (in JSON string format, reformatted by `prettier-standard`):
 [
   {
     "status": 0,
-    "rows": [{ "data": "test data 2" }, { "data": "test data 3" }]
+    "columns": ["data"],
+    "rows": [["test data 2"], ["test data 3"]]
   }
 ]
 ```
