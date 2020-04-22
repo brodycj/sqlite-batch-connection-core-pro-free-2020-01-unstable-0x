@@ -456,7 +456,7 @@ first set in JSON string format (reformatted by `prettier-standard`):
 ]
 ```
 
-Note that `lastInsertRowId` is only relevant for a statement with non-zero `rowsAffected` in the result.
+NOTE: `lastInsertRowId` is only relevant for a statement with non-zero `rowsAffected` in the result.
 
 second set (in JSON string format, reformatted by `prettier-standard`):
 
