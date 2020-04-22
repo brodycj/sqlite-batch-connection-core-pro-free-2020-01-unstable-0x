@@ -349,7 +349,10 @@ function batchDemo (connectionId) {
   window.executeBatch(
     connectionId,
     [
-      ['SELECT ?, -?, LOWER(?), UPPER(?)', [null, 123.456789, 'ABC', 'Text']],
+      [
+        'SELECT ?, -?, LOWER(?), UPPER(?)',
+        [null, 1234567.890123, 'ABC', 'Text']
+      ],
       ['SLCT 1', []],
       ['SELECT ?', ['OK', 'out of bounds parameter']],
       ['DROP TABLE IF EXISTS Testing', []],
@@ -426,7 +429,7 @@ first set in JSON string format (reformatted by `prettier-standard`):
   {
     "status": 0,
     "columns": ["?", "-?", "LOWER(?)", "UPPER(?)"],
-    "rows": [[null, -123.456789, "abc", "TEXT"]]
+    "rows": [[null, -1234567.890123, "abc", "TEXT"]]
   },
   { "status": 1, "message": "near \"SLCT\": syntax error" },
   { "status": 1, "message": "column index out of range" },

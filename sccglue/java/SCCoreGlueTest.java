@@ -257,7 +257,7 @@ class SCCoreGlueTest {
       );
 
     assertEquals(0, // SQLite OK
-      SCCoreGlue.scc_bind_double(connection, 4, 12.34)
+      SCCoreGlue.scc_bind_double(connection, 4, 12345678.90123)
       );
 
     assertEquals(0, // SQLite OK
@@ -306,10 +306,10 @@ class SCCoreGlueTest {
     assertTrue(columnType4 == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT);
 
     final String columnText4 = SCCoreGlue.scc_get_column_text(connection, 3);
-    assertTrue(columnText4.equals("-12.34"));
+    assertEquals(columnText4, "-12345678.90123");
 
     final double columnValue4 = SCCoreGlue.scc_get_column_double(connection, 3);
-    assertTrue(columnValue4 == -12.34);
+    assertEquals(columnValue4, -12345678.90123);
 
     final String columnName5 = SCCoreGlue.scc_get_column_name(connection, 4);
     assertTrue(columnName5.equals("(10 * ?)"));
