@@ -256,6 +256,8 @@ body {
 
 #### app.js
 
+(reformatted by `prettier-standard`)
+
 ```js
 document.addEventListener('deviceready', onReady)
 
