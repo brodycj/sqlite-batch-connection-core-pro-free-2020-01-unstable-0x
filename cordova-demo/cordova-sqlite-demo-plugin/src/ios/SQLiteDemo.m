@@ -57,6 +57,8 @@
   NSMutableArray * results = [NSMutableArray arrayWithCapacity: 0];
 
   for (int i=0; i < [data count]; ++i) {
+    int previousTotalChanges = scc_get_total_changes(connection_id);
+
     NSArray * entry = [data objectAtIndex:i];
 
     NSString * statement = [entry objectAtIndex: 0];
@@ -147,11 +149,14 @@
 
       [results addObject: @{@"status":@0, @"columns": columns, @"rows": rows}];
     } else if (stepResult == 101) {
+      int totalChanges = scc_get_total_changes(connection_id);
+      int rowsAffected = totalChanges - previousTotalChanges;
+
       [results addObject: @{
         @"status": @0,
-        @"total_changes": [NSNumber numberWithInteger:
-          scc_get_total_changes(connection_id)],
-        @"last_insert_rowid": [NSNumber numberWithInteger:
+        @"rowsAffected": [NSNumber numberWithInteger: rowsAffected],
+        @"totalChanges": [NSNumber numberWithInteger: totalChanges],
+        @"lastInsertRowId": [NSNumber numberWithInteger:
           scc_get_last_insert_rowid(connection_id)]
       }];
     } else {

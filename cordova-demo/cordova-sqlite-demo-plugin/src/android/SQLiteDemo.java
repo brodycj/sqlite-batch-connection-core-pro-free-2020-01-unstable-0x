@@ -54,6 +54,8 @@ public class SQLiteDemo extends CordovaPlugin {
       final int count = data.length();
 
       for (int i=0; i<count; ++i) {
+        int previousTotalChanges = SCCoreGlue.scc_get_total_changes(mydbc);
+
         JSONArray entry = data.getJSONArray(i);
 
         String s = entry.getString(0);
@@ -139,10 +141,16 @@ public class SQLiteDemo extends CordovaPlugin {
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);
           } else if (stepResult == 101) {
+            int totalChanges = SCCoreGlue.scc_get_total_changes(mydbc);
+            int rowsAffected = totalChanges - previousTotalChanges;
+
             JSONObject result = new JSONObject();
+            // same order as iOS & macOS ("osx"):
             result.put("status", 0); // REPORT SQLite OK
-            result.put("total_changes", SCCoreGlue.scc_get_total_changes(mydbc));
-            result.put("last_insert_rowid", SCCoreGlue.scc_get_last_insert_rowid(mydbc));
+            result.put("totalChanges", totalChanges);
+            result.put("rowsAffected", rowsAffected);
+            result.put("lastInsertRowId",
+              SCCoreGlue.scc_get_last_insert_rowid(mydbc));
             results.put(result);
             SCCoreGlue.scc_end_statement(mydbc);
           } else {
