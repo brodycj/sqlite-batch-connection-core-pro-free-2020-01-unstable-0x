@@ -11,6 +11,7 @@ function executeBatch (connectionId, batchList, cb) {
   ])
 }
 
-window.openDatabaseConnection = openDatabaseConnection
-
-window.executeBatch = executeBatch
+window.sqliteBatchConnection = {
+  openDatabaseConnection: openDatabaseConnection,
+  executeBatch: executeBatch
+}

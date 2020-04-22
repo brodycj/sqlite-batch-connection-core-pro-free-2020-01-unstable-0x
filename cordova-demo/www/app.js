@@ -25,7 +25,7 @@ function openFileDatabaseConnection (name, openCallback, errorCallback) {
     function (path) {
       log('database file path: ' + path)
 
-      window.openDatabaseConnection(
+      window.sqliteBatchConnection.openDatabaseConnection(
         { path: path, flags: OPEN_DATABASE_FLAGS },
         openCallback,
         errorCallback
@@ -48,7 +48,7 @@ function openCacheFileDatabaseConnection (name, openCallback, errorCallback) {
 
       log('database cache file path: ' + path)
 
-      window.openDatabaseConnection(
+      window.sqliteBatchConnection.openDatabaseConnection(
         { path: path, flags: OPEN_DATABASE_FLAGS },
         openCallback,
         errorCallback
@@ -72,7 +72,7 @@ function openCallback (connectionId) {
   log('open connection id: ' + connectionId)
 
   // ERROR TEST - file name with incorrect flags:
-  window.openDatabaseConnection(
+  window.sqliteBatchConnection.openDatabaseConnection(
     { path: 'dummy.db', flags: 0 },
     function (_ignored) {
       log('FAILURE - unexpected open success callback received')
@@ -88,7 +88,7 @@ function openCallback (connectionId) {
 
 function batchDemo (connectionId) {
   log('starting batch demo for connection id: ' + connectionId)
-  window.executeBatch(
+  window.sqliteBatchConnection.executeBatch(
     connectionId,
     [
       [
@@ -125,10 +125,14 @@ function startReaderDemo () {
     function (id) {
       log('read from another connection id: ' + id)
 
-      window.executeBatch(id, [['SELECT * FROM Testing', []]], function (res) {
-        log(JSON.stringify(res))
-        startCacheFileDemo()
-      })
+      window.sqliteBatchConnection.executeBatch(
+        id,
+        [['SELECT * FROM Testing', []]],
+        function (res) {
+          log(JSON.stringify(res))
+          startCacheFileDemo()
+        }
+      )
     },
     function (error) {
       log('UNEXPECTED OPEN ERROR: ' + error)
@@ -142,7 +146,7 @@ function startCacheFileDemo () {
     function (id) {
       log('cache file database connection id: ' + id)
 
-      window.executeBatch(
+      window.sqliteBatchConnection.executeBatch(
         id,
         [
           ['DROP TABLE IF EXISTS Testing', []],
