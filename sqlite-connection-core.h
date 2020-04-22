@@ -10,7 +10,7 @@
 
 /**
  * This required initialization function should be called from the
- * main thread upon * startup, * is __NOT__ thread-safe.
+ * main thread upon startup, is __NOT__ thread-safe.
  */
 void scc_init();
 
