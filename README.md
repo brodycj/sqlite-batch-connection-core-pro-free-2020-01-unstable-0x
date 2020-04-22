@@ -356,6 +356,7 @@ function batchDemo (connectionId) {
         'SELECT ?, -?, LOWER(?), UPPER(?)',
         [null, 1234567.890123, 'ABC', 'Text']
       ],
+      ['SELECT -?', [1234567890123456]], // should fit into 52 bits (signed)
       ['SLCT 1', []],
       ['SELECT ?', ['OK', 'out of bounds parameter']],
       ['DROP TABLE IF EXISTS Testing', []],
@@ -438,6 +439,7 @@ first set in JSON string format (reformatted by `prettier-standard`):
     "columns": ["?", "-?", "LOWER(?)", "UPPER(?)"],
     "rows": [[null, -1234567.890123, "abc", "TEXT"]]
   },
+  { "status": 0, "columns": ["-?"], "rows": [[-1234567890123456]] },
   { "status": 1, "message": "near \"SLCT\": syntax error" },
   { "status": 1, "message": "column index out of range" },
   { "status": 0, "totalChanges": 0, "rowsAffected": 0, "lastInsertRowId": 0 },

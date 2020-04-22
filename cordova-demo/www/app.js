@@ -95,6 +95,7 @@ function batchDemo (connectionId) {
         'SELECT ?, -?, LOWER(?), UPPER(?)',
         [null, 1234567.890123, 'ABC', 'Text']
       ],
+      ['SELECT -?', [1234567890123456]], // should fit into 52 bits (signed)
       ['SLCT 1', []],
       ['SELECT ?', ['OK', 'out of bounds parameter']],
       ['DROP TABLE IF EXISTS Testing', []],

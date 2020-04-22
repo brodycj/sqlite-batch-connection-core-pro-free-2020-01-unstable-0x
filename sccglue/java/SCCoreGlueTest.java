@@ -261,7 +261,7 @@ class SCCoreGlueTest {
       );
 
     assertEquals(0, // SQLite OK
-      SCCoreGlue.scc_bind_long(connection, 5, 5678)
+      SCCoreGlue.scc_bind_long(connection, 5, 123456789012345678L)
       );
 
     assertEquals(100, // SQLite rows
@@ -318,10 +318,10 @@ class SCCoreGlueTest {
     assertEquals(columnType5, SCCoreGlue.SCC_COLUMN_TYPE_INTEGER);
 
     final String columnText5 = SCCoreGlue.scc_get_column_text(connection, 4);
-    assertEquals(columnText5, "56780");
+    assertEquals(columnText5, "1234567890123456780");
 
     final long columnValue5 = SCCoreGlue.scc_get_column_long(connection, 4);
-    assertEquals(columnValue5, 56780);
+    assertEquals(columnValue5, 1234567890123456780L);
 
     assertEquals(101, // SQLite done
       SCCoreGlue.scc_step(connection)

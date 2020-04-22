@@ -193,7 +193,7 @@ int scc_bind_double(int connection_id, int index, double value)
   }
 }
 
-int scc_bind_long(int connection_id, int index, long value)
+int scc_bind_long(int connection_id, int index, scc_long_long value)
 {
   if (connection_id < 0) {
     return 21; // SQLite abuse
@@ -382,7 +382,7 @@ double scc_get_column_double(int connection_id, int column)
   }
 }
 
-long scc_get_column_long(int connection_id, int column)
+scc_long_long scc_get_column_long(int connection_id, int column)
 {
   if (connection_id < 0) {
     // BOGUS
@@ -390,18 +390,18 @@ long scc_get_column_long(int connection_id, int column)
   } else {
     scc_record_ref r = &scc_record_list[connection_id];
     sqlite3_stmt * st;
-    int rc;
+    scc_long_long value;
 
     START_REC_ST_MUTEX(r);
     st = r->_st;
     if (st == NULL) {
       // BOGUS
-      rc = 0;
+      value = 0;
     } else {
-      rc = sqlite3_column_int64(st, column);
+      value = sqlite3_column_int64(st, column);
     }
     END_REC_ST_MUTEX(r);
-    return rc;
+    return value;
   }
 }
 

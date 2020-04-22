@@ -9,6 +9,12 @@
 #define SCC_COLUMN_TYPE_NULL 5
 
 /**
+ * This typedef is needed to help gluegen generate JNI C code
+ * that is using the correct data type.
+ */
+typedef long long scc_long_long;
+
+/**
  * This required initialization function should be called from the
  * main thread upon startup, is __NOT__ thread-safe.
  */
@@ -22,7 +28,7 @@ int scc_bind_text(int connection_id, int index, const char * text);
 
 int scc_bind_double(int connection_id, int index, double value);
 
-int scc_bind_long(int connection_id, int index, long value);
+int scc_bind_long(int connection_id, int index, scc_long_long value);
 
 int scc_bind_null(int connection_id, int index);
 
@@ -40,7 +46,7 @@ const char * scc_get_column_text(int connection_id, int column);
 
 double scc_get_column_double(int connection_id, int column);
 
-long scc_get_column_long(int connection_id, int column);
+scc_long_long scc_get_column_long(int connection_id, int column);
 
 int scc_get_total_changes(int connection_id);
 
