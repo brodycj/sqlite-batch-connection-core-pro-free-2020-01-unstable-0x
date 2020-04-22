@@ -591,8 +591,8 @@ static void test12() {
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
-  TEST_ASSERT_ALWAYS(scc_get_total_changes(connection_id) == 0);
-  TEST_ASSERT_ALWAYS(scc_get_last_insert_rowid(connection_id) == 0);
+  TEST_ASSERT_INT_EQUALS(0, scc_get_total_changes(connection_id));
+  TEST_ASSERT_INT_EQUALS(0, scc_get_last_insert_rowid(connection_id));
 
   {
     TEST_ASSERT_INT_EQUALS(0, // SQLite OK

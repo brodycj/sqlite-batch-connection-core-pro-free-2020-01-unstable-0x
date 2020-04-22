@@ -273,37 +273,37 @@ class SCCoreGlueTest {
       );
 
     final String columnName = SCCoreGlue.scc_get_column_name(connection, 0);
-    assertTrue(columnName.equals("UPPER(?)"));
+    assertEquals(columnName, "UPPER(?)");
 
     final int columnType = SCCoreGlue.scc_get_column_type(connection, 0);
-    assertTrue(columnType == SCCoreGlue.SCC_COLUMN_TYPE_TEXT);
+    assertEquals(columnType, SCCoreGlue.SCC_COLUMN_TYPE_TEXT);
 
     final String columnText = SCCoreGlue.scc_get_column_text(connection, 0);
-    assertTrue(columnText.equals("TEXT"));
+    assertEquals(columnText, "TEXT");
 
     final String columnName2 = SCCoreGlue.scc_get_column_name(connection, 1);
-    assertTrue(columnName2.equals("LOWER(?)"));
+    assertEquals(columnName2, "LOWER(?)");
 
     final int columnType2 = SCCoreGlue.scc_get_column_type(connection, 1);
-    assertTrue(columnType2 == SCCoreGlue.SCC_COLUMN_TYPE_TEXT);
+    assertEquals(columnType2, SCCoreGlue.SCC_COLUMN_TYPE_TEXT);
 
     final String columnText2 = SCCoreGlue.scc_get_column_text(connection, 1);
-    assertTrue(columnText2.equals("abc"));
+    assertEquals(columnText2, "abc");
 
     final String columnName3 = SCCoreGlue.scc_get_column_name(connection, 2);
-    assertTrue(columnName3.equals("?"));
+    assertEquals(columnName3, "?");
 
     final int columnType3 = SCCoreGlue.scc_get_column_type(connection, 2);
-    assertTrue(columnType3 == SCCoreGlue.SCC_COLUMN_TYPE_NULL);
+    assertEquals(columnType3, SCCoreGlue.SCC_COLUMN_TYPE_NULL);
 
     final String columnText3 = SCCoreGlue.scc_get_column_text(connection, 2);
-    assertTrue(columnText3.equals(""));
+    assertEquals(columnText3, "");
 
     final String columnName4 = SCCoreGlue.scc_get_column_name(connection, 3);
-    assertTrue(columnName4.equals("-?"));
+    assertEquals(columnName4, "-?");
 
     final int columnType4 = SCCoreGlue.scc_get_column_type(connection, 3);
-    assertTrue(columnType4 == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT);
+    assertEquals(columnType4, SCCoreGlue.SCC_COLUMN_TYPE_FLOAT);
 
     final String columnText4 = SCCoreGlue.scc_get_column_text(connection, 3);
     assertEquals(columnText4, "-12345678.90123");
@@ -312,16 +312,16 @@ class SCCoreGlueTest {
     assertEquals(columnValue4, -12345678.90123);
 
     final String columnName5 = SCCoreGlue.scc_get_column_name(connection, 4);
-    assertTrue(columnName5.equals("(10 * ?)"));
+    assertEquals(columnName5, "(10 * ?)");
 
     final int columnType5 = SCCoreGlue.scc_get_column_type(connection, 4);
-    assertTrue(columnType5 == SCCoreGlue.SCC_COLUMN_TYPE_INTEGER);
+    assertEquals(columnType5, SCCoreGlue.SCC_COLUMN_TYPE_INTEGER);
 
     final String columnText5 = SCCoreGlue.scc_get_column_text(connection, 4);
-    assertTrue(columnText5.equals("56780"));
+    assertEquals(columnText5, "56780");
 
     final long columnValue5 = SCCoreGlue.scc_get_column_long(connection, 4);
-    assertTrue(columnValue5 == 56780);
+    assertEquals(columnValue5, 56780);
 
     assertEquals(101, // SQLite done
       SCCoreGlue.scc_step(connection)
