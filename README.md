@@ -48,7 +48,6 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ## Some known limitations
 
-- 64-bit integer values not tested, with known issue on 32-bit platforms.
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
 - In case of Apache Cordova, a helper plugin such as `cordova-sqlite-storage-file` should be used to resolve an absolute database file path before opening it.
 - not able to close database connection and release internal resources
