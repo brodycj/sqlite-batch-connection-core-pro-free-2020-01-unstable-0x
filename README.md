@@ -320,11 +320,8 @@ function openCacheFileDatabaseConnection (name, openCallback, errorCallback) {
 function onReady () {
   log('deviceready event received')
 
-  // for SQLite database file:
-  openFileDatabaseConnection(DATABASE_FILE_NAME, openCallback, function (
-    error
-  ) {
-    log('UNEXPECTED OPEN ERROR: ' + error)
+  openFileDatabaseConnection(DATABASE_FILE_NAME, openCallback, function (e) {
+    log('UNEXPECTED OPEN ERROR: ' + e)
   })
 }
 
