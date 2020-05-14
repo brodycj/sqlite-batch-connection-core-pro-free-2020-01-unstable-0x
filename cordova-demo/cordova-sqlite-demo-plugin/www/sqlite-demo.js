@@ -7,7 +7,16 @@ function openDatabaseConnection (options, cb, errorCallback) {
 function executeBatch (connectionId, batchList, cb) {
   cordova.exec(cb, null, 'SQLiteDemo', 'executeBatch', [
     connectionId,
-    batchList
+    // avoid potential behavior such as crashing in case of invalid
+    // batchList due to possible API abuse
+    batchList.map(function (entry) {
+      return [
+        entry[0],
+        entry[1].map(function (parameter) {
+          return parameter
+        })
+      ]
+    })
   ])
 }
 
