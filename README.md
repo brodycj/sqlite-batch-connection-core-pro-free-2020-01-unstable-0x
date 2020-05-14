@@ -51,7 +51,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
 - In case of Apache Cordova, a helper plugin such as `cordova-sqlite-storage-file` should be used to resolve an absolute database file path before opening it.
 - not able to close database connection and release internal resources
-- hard limit of 5000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building
+- hard limit of 1000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building
 - The API was not designed to support parallel database access through the same database connection. For parallel database access it is recommended to open multiple SQLite connections to the same database file name.
 - A limited number of historical SQLite features are disabled since the `SQLITE_DBCONFIG_DEFENSIVE` option is enabled (unless `NO_SCC_DBCONFIG_DEFENSIVE` is defined when building) ref: <https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive>
 - Background threading would need to be done in a higher-level component.
