@@ -222,7 +222,7 @@ column index: 1
 
 ### Apache Cordova demo app
 
-Demonstrates accessing database files from an Apache Cordova application, with help from the `cordova-sqlite-storage-file` and `cordova-plugin-file` plugins.
+Demonstrates accessing both memory database and database files from an Apache Cordova application, with help from the `cordova-sqlite-storage-file` and `cordova-plugin-file` plugins.
 
 #### index.html
 
@@ -273,7 +273,15 @@ const DATABASE_FILE_NAME = 'demo.db'
 
 // SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
 // ref: https://www.sqlite.org/c3ref/open.html
-const OPEN_DATABASE_FLAGS = 6
+const OPEN_DATABASE_FILE_FLAGS = 6
+
+function openMemoryDatabaseConnection (openCallback, errorCallback) {
+  window.sqliteBatchConnection.openDatabaseConnection(
+    { path: ':memory:', flags: 2 },
+    openCallback,
+    errorCallback
+  )
+}
 
 function openFileDatabaseConnection (name, openCallback, errorCallback) {
   window.sqliteStorageFile.resolveAbsolutePath(
@@ -286,7 +294,7 @@ function openFileDatabaseConnection (name, openCallback, errorCallback) {
       log('database file path: ' + path)
 
       window.sqliteBatchConnection.openDatabaseConnection(
-        { path: path, flags: OPEN_DATABASE_FLAGS },
+        { path: path, flags: OPEN_DATABASE_FILE_FLAGS },
         openCallback,
         errorCallback
       )
@@ -309,7 +317,7 @@ function openCacheFileDatabaseConnection (name, openCallback, errorCallback) {
       log('database cache file path: ' + path)
 
       window.sqliteBatchConnection.openDatabaseConnection(
-        { path: path, flags: OPEN_DATABASE_FLAGS },
+        { path: path, flags: OPEN_DATABASE_FILE_FLAGS },
         openCallback,
         errorCallback
       )
@@ -319,13 +327,40 @@ function openCacheFileDatabaseConnection (name, openCallback, errorCallback) {
 
 function onReady () {
   log('deviceready event received')
-
-  openFileDatabaseConnection(DATABASE_FILE_NAME, openCallback, function (e) {
-    log('UNEXPECTED OPEN ERROR: ' + e)
-  })
+  startMemoryDatabaseDemo()
 }
 
-function openCallback (connectionId) {
+function startMemoryDatabaseDemo () {
+  openMemoryDatabaseConnection(
+    function (id) {
+      log('memory database connection id: ' + id)
+
+      window.sqliteBatchConnection.executeBatch(
+        id,
+        [['SELECT UPPER(?)', ['Text']]],
+        function (results) {
+          log(JSON.stringify(results))
+          startFileDatabaseDemo()
+        }
+      )
+    },
+    function (error) {
+      log('UNEXPECTED OPEN MEMORY DATABASE ERROR: ' + error)
+    }
+  )
+}
+
+function startFileDatabaseDemo () {
+  openFileDatabaseConnection(
+    DATABASE_FILE_NAME,
+    openDatabaseFileCallback,
+    function (e) {
+      log('UNEXPECTED OPEN ERROR: ' + e)
+    }
+  )
+}
+
+function openDatabaseFileCallback (connectionId) {
   log('open connection id: ' + connectionId)
 
   // ERROR TEST - file name with incorrect flags:
@@ -426,7 +461,13 @@ function startCacheFileDemo () {
 
 #### expected Cordova batch results
 
-first set in JSON string format (reformatted by `prettier-standard`):
+results from memory database demo:
+
+```json
+[{ "status": 0, "columns": ["UPPER(?)"], "rows": [["TEXT"]] }]
+```
+
+first file resut set in JSON string format (reformatted by `prettier-standard`):
 
 ```json
 [
@@ -456,7 +497,7 @@ first set in JSON string format (reformatted by `prettier-standard`):
 
 NOTE: `lastInsertRowId` is only relevant for a statement with non-zero `rowsAffected` in the result.
 
-second set (in JSON string format, reformatted by `prettier-standard`):
+second file result set (in JSON string format, reformatted by `prettier-standard`):
 
 ```json
 [
@@ -504,7 +545,7 @@ prerequisites:
 
 how:
 
-- `(cd sccglue && make jar)`
+- `(cd sccglue && make ndkbuild)`
 - `cd cordova-demo`
 - `make prepare-app`
 - recommended: do `cordova plugin ls` to check that the demo plugin was added
