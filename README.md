@@ -514,4 +514,4 @@ how:
 
 ## build notes
 
-- Makefiles are designed to fetch and extract recent SQLite amalgamation as needed to build test programs, NDK library, and Cordova demo.
+- Makefiles are designed to fetch and extract recent SQLite amalgamation as needed to build test programs, JAR library with NDK build, and Cordova demo.
