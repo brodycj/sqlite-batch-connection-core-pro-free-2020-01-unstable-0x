@@ -504,7 +504,7 @@ prerequisites:
 
 how:
 
-- `(cd sccglue && make ndkbuild)`
+- `(cd sccglue && make jar)`
 - `cd cordova-demo`
 - `make prepare-app`
 - recommended: do `cordova plugin ls` to check that the demo plugin was added

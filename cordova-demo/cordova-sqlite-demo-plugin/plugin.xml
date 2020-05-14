@@ -21,7 +21,6 @@
       </feature>
     </config-file>
     <source-file src="src/android/SQLiteDemo.java" target-dir="src/com/demo" />
-    <source-file src="dependencies/SCCoreGlue.java" target-dir="src/io/sqlc" />
     <lib-file src="dependencies/sqlite-connection-core-glue.jar" />
   </platform>
 

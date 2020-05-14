@@ -20,14 +20,6 @@ GLUEGEN_FIX_JNI_COMMAND := \
 	sed -i.orig "s/  *$$//g" $(GLUEGEN_FIX_JNI_FILE)
 GLUEGEN_REMOVE_JNI_ORIG := rm -rf $(GLUEGEN_FIX_JNI_FILE).orig
 
-NDK_JAR_FILENAME := sqlite-connection-core-glue.jar
-
-include ../sqlite-download.mk
-
-include scclib.mk
-
-ndkinit: $(GLUEGENTOOLS_PATH)
-
 $(GLUEGENTOOLS_PATH):
 	curl -OL https://github.com/sqlg/gluegentools/archive/master.zip
 	unzip master.zip
@@ -39,20 +31,6 @@ regen: $(GLUEGENTOOLS_PATH)
 	$(GLUEGEN_FIX_JNI_COMMAND)
 	$(GLUEGEN_REMOVE_JNI_ORIG)
 
-test: jnilib jnitest
-
-# NOTE: adding v (verbose) flag for the beginning stage:
-ndkbuild: $(SQLITE_AMALGAMATION)/sqlite3.c
-	# cd jni
-	ndk-build
-	cp -r libs lib
-	jar cvf $(NDK_JAR_FILENAME) lib
-
-ndkclean:
-	rm -rf obj
-	rm -rf libs
-	rm -rf lib
-
-ndkdistclean: ndkclean
+glue-regen-distclean:
 	rm -rf gluegentools
 	rm -rf gluegentools-*

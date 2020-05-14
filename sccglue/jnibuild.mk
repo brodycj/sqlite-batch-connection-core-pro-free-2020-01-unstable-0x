@@ -29,7 +29,6 @@ jnitest: $(JNI_LIB_FILE) jnitestclean
 	java -cp java SCCoreGlueTest
 
 jniclean: jnitestclean
-	rm -rf *.jar
 	rm -rf java/*.class
 	rm -rf java/io/sqlc/*.class
 	rm -rf *.jnilib
