@@ -9,28 +9,31 @@
     * https://cordova.apache.org/docs/en/latest/guide/platforms/ios/plugin.html
   -->
 
-  <js-module src="www/sqlite-demo.js" name="SQLiteDemo">
+  <js-module src="www/sqlite-demo.js" name="SQLiteDemoPlugin">
     <!-- keep it simple: -->
     <runs />
   </js-module>
 
   <platform name="android">
     <config-file target="config.xml" parent="/*">
-      <feature name="SQLiteDemo">
-        <param name="android-package" value="com.demo.SQLiteDemo" />
+      <feature name="SQLiteDemoPlugin">
+        <param name="android-package" value="com.demo.SQLiteDemoPlugin" />
       </feature>
     </config-file>
-    <source-file src="src/android/SQLiteDemo.java" target-dir="src/com/demo" />
+    <source-file src="src/android/SQLiteDemoPlugin.java" target-dir="src/com/demo" />
+    <source-file src="dependencies/SQLiteBatchCore.java" target-dir="src/io/sqlc" />
     <lib-file src="dependencies/sqlite-connection-core-glue.jar" />
   </platform>
 
   <platform name="ios">
     <config-file target="config.xml" parent="/*">
-      <feature name="SQLiteDemo">
-        <param name="ios-package" value="SQLiteDemo" />
+      <feature name="SQLiteDemoPlugin">
+        <param name="ios-package" value="SQLiteDemoPlugin" />
       </feature>
     </config-file>
-    <source-file src="src/ios/SQLiteDemo.m" />
+    <source-file src="src/ios/SQLiteDemoPlugin.m" />
+    <header-file src="dependencies/SQLiteBatchCore.h" />
+    <source-file src="dependencies/SQLiteBatchCore.m" />
     <header-file src="dependencies/sqlite3.h" />
     <source-file
       src="dependencies/sqlite3.c"
@@ -46,11 +49,13 @@
 
   <platform name="osx">
     <config-file target="config.xml" parent="/*">
-      <feature name="SQLiteDemo">
-        <param name="osx-package" value="SQLiteDemo" />
+      <feature name="SQLiteDemoPlugin">
+        <param name="osx-package" value="SQLiteDemoPlugin" />
       </feature>
     </config-file>
-    <source-file src="src/ios/SQLiteDemo.m" />
+    <source-file src="src/ios/SQLiteDemoPlugin.m" />
+    <header-file src="dependencies/SQLiteBatchCore.h" />
+    <source-file src="dependencies/SQLiteBatchCore.m" />
     <header-file src="dependencies/sqlite3.h" />
     <source-file
       src="dependencies/sqlite3.c"

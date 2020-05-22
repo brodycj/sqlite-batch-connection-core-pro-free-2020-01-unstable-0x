@@ -1,59 +1,23 @@
-#import <Cordova/CDVPlugin.h>
+#import "SQLiteBatchCore.h"
 
 #include "sqlite-connection-core.h"
 
-@interface SQLiteDemo : CDVPlugin
+@implementation SQLiteBatchCore
 
-- (void) openDatabaseConnection: (CDVInvokedUrlCommand *) commandInfo;
-
-- (void) executeBatch: (CDVInvokedUrlCommand *) commandInfo;
-
-@end
-
-@implementation SQLiteDemo
-
-- (void) pluginInitialize
++ (void) initialize
 {
   scc_init();
 }
 
-- (void) openDatabaseConnection: (CDVInvokedUrlCommand *) commandInfo
++ (int) openBatchConnection: (NSString *) fullName
+                      flags: (int) flags
 {
-  NSArray * _args = commandInfo.arguments;
-
-  NSDictionary * options = (NSDictionary *)[_args objectAtIndex: 0];
-
-  const char * fullName = [(NSString *)[options valueForKey: @"fullName"] cString];
-
-  const int flags = [(NSNumber *)[options valueForKey: @"flags"] intValue];
-
-  const int connection_id = scc_open_connection(fullName, flags);
-
-  if (connection_id < 0) {
-    CDVPluginResult * openErrorResult =
-      [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
-                        messageAsString: @"open error"];
-    [self.commandDelegate sendPluginResult: openErrorResult
-                                callbackId: commandInfo.callbackId];
-    return;
-  }
-
-  CDVPluginResult * openResult =
-    [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-                         messageAsInt: connection_id];
-
-  [self.commandDelegate sendPluginResult: openResult
-                              callbackId: commandInfo.callbackId];
+  return scc_open_connection([fullName cString], flags);
 }
 
-- (void) executeBatch: (CDVInvokedUrlCommand *) commandInfo
++ (NSArray *) executeBatch: (int) connection_id
+                      data: (NSArray *) data
 {
-  NSArray * _args = commandInfo.arguments;
-
-  const int connection_id = [(NSNumber *)[_args objectAtIndex: 0] intValue];
-
-  NSArray * data = [_args objectAtIndex: 1];
-
   NSMutableArray * results = [NSMutableArray arrayWithCapacity: 0];
 
   for (int i=0; i < [data count]; ++i) {
@@ -161,12 +125,7 @@
     scc_end_statement(connection_id);
   }
 
-  CDVPluginResult * batchResult =
-    [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-                       messageAsArray: results];
-
-  [self.commandDelegate sendPluginResult: batchResult
-                              callbackId: commandInfo.callbackId];
+  return results;
 }
 
 @end

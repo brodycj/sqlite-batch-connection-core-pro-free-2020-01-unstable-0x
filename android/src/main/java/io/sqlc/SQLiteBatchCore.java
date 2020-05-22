@@ -1,57 +1,18 @@
-package com.demo;
+package io.sqlc;
 
-import io.sqlc.SCCoreGlue;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import org.apache.cordova.*;
-
-import org.json.*;
-
-public class SQLiteDemo extends CordovaPlugin {
-  @Override
-  public boolean execute(String method, JSONArray data, CallbackContext cbc) {
-    switch(method) {
-      case "openDatabaseConnection":
-        openDatabaseConnection(data, cbc);
-        break;
-      case "executeBatch":
-        executeBatch(data, cbc);
-        break;
-      default:
-        return false;
-    }
-    return true;
+public class SQLiteBatchCore {
+  static public int openBatchConnection(String fullName, int flags) {
+    return SCCoreGlue.scc_open_connection(fullName, flags);
   }
 
-  static private void
-  openDatabaseConnection(JSONArray args, CallbackContext cbc) {
+  static public JSONArray executeBatch(int mydbc, JSONArray data) {
     try {
-      final JSONObject options = args.getJSONObject(0);
-
-      final String fullName = options.getString("fullName");
-
-      final int flags = options.getInt("flags");
-
-      final int mydbc = SCCoreGlue.scc_open_connection(fullName, flags);
-
-      if (mydbc < 0) {
-        cbc.error("open error: " + -mydbc);
-      } else {
-        cbc.success(mydbc);
-      }
-    } catch(Exception e) {
-      // NOT EXPECTED - internal error:
-      cbc.error(e.toString());
-    }
-  }
-
-  static private void executeBatch(JSONArray args, CallbackContext cbc) {
-    try {
-      final int mydbc = args.getInt(0);
-
-      JSONArray data = args.getJSONArray(1);
+      final int count = data.length();
 
       JSONArray results = new JSONArray();
-      final int count = data.length();
 
       for (int i=0; i<count; ++i) {
         int previousTotalChanges = SCCoreGlue.scc_get_total_changes(mydbc);
@@ -159,11 +120,10 @@ public class SQLiteDemo extends CordovaPlugin {
         }
       }
 
-      // send results to JavaScript side (...)
-      cbc.success(results);
+      return results;
     } catch(Exception e) {
       // NOT EXPECTED - internal error:
-      cbc.error(e.toString());
+      throw new RuntimeException(e);
     }
   }
 
