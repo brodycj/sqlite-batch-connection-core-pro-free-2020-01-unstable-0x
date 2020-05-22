@@ -13,7 +13,7 @@ include $(LOCAL_PATH)/../../sqlite-build.mk
 # FUTURE TBD (??):
 # LOCAL_LDLIBS := -llog
 
-LOCAL_MODULE := sqlite-connection-core-glue
+LOCAL_MODULE := sqlc-connection-core-glue
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../$(SQLITE_AMALGAMATION)
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../..

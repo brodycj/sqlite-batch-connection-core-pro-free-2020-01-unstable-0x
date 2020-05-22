@@ -8,7 +8,7 @@ include scclib.mk
 JNI_C_SOURCE := jni/sccglue_jni_all.c
 
 # JNI lib file for testing on macOS:
-JNI_LIB_FILE := libsqlite-connection-core-glue.jnilib
+JNI_LIB_FILE := libsqlc-connection-core-glue.jnilib
 
 GET_MAC_JAVA_HOME := /usr/libexec/java_home
 
