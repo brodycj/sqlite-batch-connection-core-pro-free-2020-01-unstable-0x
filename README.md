@@ -51,6 +51,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 - The required `scc_init()` API initialization function which is NOT thread-safe **must** be called from the main thread upon startup.
 - In Java, `System.loadLibrary()` **must** be used to load the JNI implementation before calling any Java API functions including `scc_init()`, as shown in the Java API sample below.
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
+- 64-bit integer values are not supported by the Cordova demo. The Cordova demo is tested with integer values up to 52-bits (signed).
 - In case of Apache Cordova, a helper plugin such as `cordova-sqlite-storage-file` should be used to resolve an absolute database file path before opening it.
 - not able to close database connection and release internal resources
 - hard limit of 1000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building

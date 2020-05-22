@@ -75,10 +75,7 @@ public class SQLiteDemo extends CordovaPlugin {
           for (int j = 0; j < bindCount; ++j) {
             final Object o = bind.get(j);
 
-            if (o instanceof Integer || o instanceof Long) {
-              bindResult =
-                SCCoreGlue.scc_bind_long(mydbc, 1 + j, bind.optLong(j));
-            } else if (o instanceof Number) {
+            if (o instanceof Number) {
               bindResult =
                 SCCoreGlue.scc_bind_double(mydbc, 1 + j, bind.optDouble(j));
             } else if (o instanceof String) {
@@ -118,9 +115,8 @@ public class SQLiteDemo extends CordovaPlugin {
               for (int col=0; col < columnCount; ++col) {
                 final int type = SCCoreGlue.scc_get_column_type(mydbc, col);
 
-                if (type == SCCoreGlue.SCC_COLUMN_TYPE_INTEGER) {
-                  row.put(SCCoreGlue.scc_get_column_long(mydbc, col));
-                } else if (type == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT) {
+                if (type == SCCoreGlue.SCC_COLUMN_TYPE_INTEGER ||
+                    type == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT) {
                   row.put(SCCoreGlue.scc_get_column_double(mydbc, col));
                 } else if (type == SCCoreGlue.SCC_COLUMN_TYPE_NULL) {
                   row.put(JSONObject.NULL);

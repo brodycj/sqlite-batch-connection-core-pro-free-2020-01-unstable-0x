@@ -75,14 +75,8 @@
         if (bindValue == nil) {
           prepareResult = scc_bind_null(connection_id, 1 + j);
         } else if ([bindValue isKindOfClass: [NSNumber class]]) {
-          // TBD UIWebView vs WKWebView
-          if ([(NSNumber *)bindValue objCType][0] == 'q') {
-            prepareResult = scc_bind_long(connection_id, 1 + j,
-              [(NSNumber *)bindValue longValue]);
-          } else {
-            prepareResult = scc_bind_double(connection_id, 1 + j,
-              [(NSNumber *)bindValue doubleValue]);
-          }
+          prepareResult = scc_bind_double(connection_id, 1 + j,
+            [(NSNumber *)bindValue doubleValue]);
         } else if ([bindValue isKindOfClass: [NSString class]]) {
           prepareResult = scc_bind_text(connection_id, 1 + j,
               [(NSString *)bindValue cString]);
@@ -125,16 +119,13 @@
         for (int j = 0; j < columnCount; ++j) {
           const int columnType = scc_get_column_type(connection_id, j);
 
-          if (columnType == SCC_COLUMN_TYPE_NULL) {
-            [row addObject: [NSNull null]];
-          } else if (columnType == SCC_COLUMN_TYPE_INTEGER) {
-            NSNumber * columnNumberValue =
-              [NSNumber numberWithLongLong: scc_get_column_long(connection_id, j)];
-            [row addObject: columnNumberValue];
-          } else if (columnType == SCC_COLUMN_TYPE_FLOAT) {
+          if (columnType == SCC_COLUMN_TYPE_INTEGER ||
+              columnType == SCC_COLUMN_TYPE_FLOAT) {
             NSNumber * columnNumberValue =
               [NSNumber numberWithDouble: scc_get_column_double(connection_id, j)];
             [row addObject: columnNumberValue];
+          } else if (columnType == SCC_COLUMN_TYPE_NULL) {
+            [row addObject: [NSNull null]];
           } else {
             NSString * columnStringValue =
               [NSString stringWithUTF8String: scc_get_column_text(connection_id, j)];
