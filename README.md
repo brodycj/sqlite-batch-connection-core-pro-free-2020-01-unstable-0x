@@ -1,4 +1,4 @@
-# SQLite batch connection support preview 2020-01
+# SQLite batch connection core 2020-01
 
 **Author:** Christopher J. Brody <mailto:chris.brody+brodybits@gmail.com>
 
