@@ -33,7 +33,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 - `sqlite-connection-core.h` - main low-level C API header
 - `sqlite-connection-core.c` - main low-level C library source module
 - `ctest` - test of main low-level C library
-- `sccglue` - low-level Java API wrapper generated with help from GlueGen from jogamp.org, with JNI test
+- `sccglue` - low-level Java JNI API wrapper, generated with help from GlueGen from jogamp.org, with JNI test for macOS included
 - `cordova-demo` - extremely simple Cordova demo app for testing, reformatted by `prettier-standard`, includes Cordova demo plugin:
   - `cordova-sqlite-demo-plugin` - extremely simple Cordova plugin that can open a SQLite database, execute a set of batch statements with parameters, and send the results to the Cordova JavaScript app
 - with some other top-level Makefile artifacts included
@@ -48,6 +48,8 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ## Some known limitations
 
+- The required `scc_init()` API initialization function which is NOT thread-safe **must** be called from the main thread upon startup.
+- In Java, `System.loadLibrary()` **must** be used to load the JNI implementation before calling any Java API functions including `scc_init()`, as shown in the Java API sample below.
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
 - In case of Apache Cordova, a helper plugin such as `cordova-sqlite-storage-file` should be used to resolve an absolute database file path before opening it.
 - not able to close database connection and release internal resources
@@ -55,7 +57,6 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 - The API was not designed to support parallel database access through the same database connection. For parallel database access it is recommended to open multiple SQLite connections to the same database file name.
 - A limited number of historical SQLite features are disabled since the `SQLITE_DBCONFIG_DEFENSIVE` option is enabled (unless `NO_SCC_DBCONFIG_DEFENSIVE` is defined when building) ref: <https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive>
 - Background threading would need to be done in a higher-level component.
-- The required `scc_init()` initialization function should be called from the main thread upon startup, is **NOT** thread-safe.
 - The `sqlite-connection-core.h` API header file and Java interface class have very limited documentation comments.
 - Formal documentation of the API is missing here.
 
