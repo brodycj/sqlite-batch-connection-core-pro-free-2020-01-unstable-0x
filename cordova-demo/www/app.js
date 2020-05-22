@@ -17,7 +17,7 @@ const OPEN_DATABASE_FILE_FLAGS = 6
 
 function openMemoryDatabaseConnection (openCallback, errorCallback) {
   window.sqliteBatchConnection.openDatabaseConnection(
-    { path: ':memory:', flags: 2 },
+    { fullName: ':memory:', flags: 2 },
     openCallback,
     errorCallback
   )
@@ -34,7 +34,7 @@ function openFileDatabaseConnection (name, openCallback, errorCallback) {
       log('database file path: ' + path)
 
       window.sqliteBatchConnection.openDatabaseConnection(
-        { path: path, flags: OPEN_DATABASE_FILE_FLAGS },
+        { fullName: path, flags: OPEN_DATABASE_FILE_FLAGS },
         openCallback,
         errorCallback
       )
@@ -57,7 +57,7 @@ function openCacheFileDatabaseConnection (name, openCallback, errorCallback) {
       log('database cache file path: ' + path)
 
       window.sqliteBatchConnection.openDatabaseConnection(
-        { path: path, flags: OPEN_DATABASE_FILE_FLAGS },
+        { fullName: path, flags: OPEN_DATABASE_FILE_FLAGS },
         openCallback,
         errorCallback
       )
@@ -105,7 +105,7 @@ function openDatabaseFileCallback (connectionId) {
 
   // ERROR TEST - file name with incorrect flags:
   window.sqliteBatchConnection.openDatabaseConnection(
-    { path: 'dummy.db', flags: 0 },
+    { fullName: 'dummy.db', flags: 0 },
     function (_ignored) {
       log('FAILURE - unexpected open success callback received')
     },

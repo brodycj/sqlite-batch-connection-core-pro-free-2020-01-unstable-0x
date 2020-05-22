@@ -23,11 +23,11 @@
 
   NSDictionary * options = (NSDictionary *)[_args objectAtIndex: 0];
 
-  const char * filename = [(NSString *)[options valueForKey: @"path"] cString];
+  const char * fullName = [(NSString *)[options valueForKey: @"fullName"] cString];
 
   const int flags = [(NSNumber *)[options valueForKey: @"flags"] intValue];
 
-  const int connection_id = scc_open_connection(filename, flags);
+  const int connection_id = scc_open_connection(fullName, flags);
 
   if (connection_id < 0) {
     CDVPluginResult * openErrorResult =
