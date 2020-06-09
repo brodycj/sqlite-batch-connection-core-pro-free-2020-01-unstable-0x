@@ -39,7 +39,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 - `ctest` - test of main low-level C library
 - `sccglue` - low-level Java JNI API wrapper, generated with help from GlueGen from jogamp.org, with JNI test for macOS included
 - `cordova-demo` - extremely simple Cordova demo app for testing, reformatted by `prettier-standard`, includes Cordova demo plugin:
-  - `cordova-sqlite-demo-plugin` - extremely simple Cordova plugin that can open a SQLite database, execute a set of batch statements with parameters, and send the results to the Cordova JavaScript app
+  - `cordova-sqlite-demo-plugin` - extremely simple Cordova plugin that can open a SQLite database, execute a set of batch statements with parameters, and send the results to the Cordova JavaScript app, now with background processing
 - with some other top-level Makefile artifacts included
 
 ## Major features
@@ -59,7 +59,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 - hard limit of 1000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building
 - The API was not designed to support parallel database access through the same database connection. For parallel database access it is recommended to open multiple SQLite connections to the same database file name.
 - A limited number of historical SQLite features are disabled since the `SQLITE_DBCONFIG_DEFENSIVE` option is enabled (unless `NO_SCC_DBCONFIG_DEFENSIVE` is defined when building) ref: <https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive>
-- Background threading would need to be done in a higher-level component, which should be straightforward on both Android and iOS.
+- Background threading would need to be done in a higher-level component, which should be straightforward on both Android and iOS, as now demonstrated in the Cordova demo plugin.
 - The `sqlite-connection-core.h` API header file and Java interface class have very limited documentation comments.
 - Formal documentation of the API is missing here.
 - Missing both demonstration and formal documentation of SQLiteBatchCore class for Android and iOS, which is demonstrated in `cordova-sqlite-demo-plugin` subdirectory of `cordova-demo`.
@@ -229,7 +229,7 @@ column index: 1
 
 ### Apache Cordova demo app
 
-Demonstrates accessing both memory database and database files from an Apache Cordova application, with help from the `cordova-sqlite-storage-file` and `cordova-plugin-file` plugins.
+Demonstrates accessing both memory database and database files from an Apache Cordova application, now with background processing, with help from the `cordova-sqlite-storage-file` and `cordova-plugin-file` plugins.
 
 #### index.html
 
