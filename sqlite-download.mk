@@ -1,4 +1,4 @@
-SQLITE_AMALGAMATION := sqlite-amalgamation-3310100
+SQLITE_AMALGAMATION := sqlite-amalgamation-3320200
 
 SQLITE_ZIP := $(SQLITE_AMALGAMATION).zip
 
