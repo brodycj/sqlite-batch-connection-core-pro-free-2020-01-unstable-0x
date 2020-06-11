@@ -458,6 +458,26 @@ function startCacheFileDemo () {
         ],
         function (results) {
           log(JSON.stringify(results))
+          u0000Character()
+        }
+      )
+    },
+    function (error) {
+      log('UNEXPECTED OPEN ERROR: ' + error)
+    }
+  )
+}
+
+function u0000Character () {
+  openMemoryDatabaseConnection(
+    function (id) {
+      log('memory database connection id for u0000 character: ' + id)
+
+      window.sqliteBatchConnection.executeBatch(
+        id,
+        [['SELECT HEX(?)', ['abc\u0001\u0000def']]],
+        function (results) {
+          log(JSON.stringify(results))
         }
       )
     },
@@ -529,6 +549,8 @@ results from cache database file demo:
   { "status": 0, "columns": ["data"], "rows": [["test data"]] }
 ]
 ```
+
+Note that results of the `u0000` character demo may depend on the platform.
 
 ## Testing
 
