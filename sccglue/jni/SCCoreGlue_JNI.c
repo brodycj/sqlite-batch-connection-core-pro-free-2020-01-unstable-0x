@@ -102,7 +102,7 @@ Java_io_sqlc_SCCoreGlue_scc_1bind_1text__IILjava_lang_String_2(JNIEnv *env, jcla
  */
 JNIEXPORT jint JNICALL
 Java_io_sqlc_SCCoreGlue_scc_1bind_1text16__IILjava_lang_String_2I(JNIEnv *env, jclass _unused, jint connection_id, jint index, jstring text, jint length) {
-  const char* _strchars_text = NULL;
+  const void * _strchars_text = NULL;
   int _res;
   if ( NULL != text ) {
     _strchars_text = (*env)->GetStringChars(env, text, (jboolean*)NULL);
