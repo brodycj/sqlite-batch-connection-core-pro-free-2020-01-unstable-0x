@@ -1,47 +1,68 @@
 package io.sqlc;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 public class SQLiteBatchCore {
+  public interface BatchData {
+    int getEntryCount();
+    void openEntry(int index);
+    String getEntryStatement();
+    int getEntryBindColumnCount();
+    boolean isEntryBindColumnNumber(int column);
+    boolean isEntryBindColumnString(int column);
+    double getEntryBindColumnDouble(int column);
+    String getEntryBindColumnString(int column);
+  }
+
+  public interface BatchResults {
+    void startNewEntry();
+    void entryPutFieldAsInteger(String name, int value);
+    void entryPutFieldAsString(String name, String value);
+    void putNewEntry();
+    void startNewEntryWithRows();
+    void entryPutColumnName(String name);
+    void startEntryRow();
+    void entryPutRowValueAsString(String value);
+    void entryPutRowValueAsDouble(double value);
+    void entryPutRowValueAsNull();
+    void entryPutRow();
+    void putNewEntryWithRows();
+  }
+
   static public int openBatchConnection(String fullName, int flags) {
     return SCCoreGlue.scc_open_connection(fullName, flags);
   }
 
-  static public JSONArray executeBatch(int mydbc, JSONArray data) {
+  public static void
+  executeBatch(final int mydbc, BatchData batchData, BatchResults batchResults) {
     try {
-      final int count = data.length();
-
-      JSONArray results = new JSONArray();
+      final int count = batchData.getEntryCount();
 
       for (int i=0; i<count; ++i) {
         int previousTotalChanges = SCCoreGlue.scc_get_total_changes(mydbc);
 
-        JSONArray entry = data.getJSONArray(i);
+        batchData.openEntry(i);
 
-        String s = entry.getString(0);
+        String statement = batchData.getEntryStatement();
 
-        if (SCCoreGlue.scc_begin_statement(mydbc, s) != 0) {
-          JSONObject result = new JSONObject();
-          result.put("status", 1); // REPORT SQLite ERROR 1
-          result.put("message", SCCoreGlue.scc_get_last_error_message(mydbc));
-          results.put(result);
+        if (SCCoreGlue.scc_begin_statement(mydbc, statement) != 0) {
+          batchResults.startNewEntry();
+          batchResults.entryPutFieldAsInteger("status", 1); // SQLite ERROR 1
+          batchResults.entryPutFieldAsString("message",
+            SCCoreGlue.scc_get_last_error_message(mydbc));
+          batchResults.putNewEntry();
         } else {
-          JSONArray bind = entry.getJSONArray(1);
-
-          final int bindCount = bind.length();
+          final int bindCount = batchData.getEntryBindColumnCount();
 
           int bindResult = 0; // SQLite OK
 
           for (int j = 0; j < bindCount; ++j) {
-            final Object o = bind.get(j);
-
-            if (o instanceof Number) {
+            if (batchData.isEntryBindColumnNumber(j)) {
               bindResult =
-                SCCoreGlue.scc_bind_double(mydbc, 1 + j, bind.optDouble(j));
-            } else if (o instanceof String) {
+                SCCoreGlue.scc_bind_double(mydbc, 1 + j,
+                  batchData.getEntryBindColumnDouble(j));
+            } else if (batchData.isEntryBindColumnString(j)) {
               bindResult =
-                SCCoreGlue.scc_bind_text(mydbc, 1 + j, o.toString());
+                SCCoreGlue.scc_bind_text(mydbc, 1 + j,
+                  batchData.getEntryBindColumnString(j));
             } else {
               bindResult =
                 SCCoreGlue.scc_bind_null(mydbc, 1 + j);
@@ -49,10 +70,11 @@ public class SQLiteBatchCore {
           }
 
           if (bindResult != 0) {
-            JSONObject result = new JSONObject();
-            result.put("status", 1); // REPORT SQLite ERROR 1
-            result.put("message", SCCoreGlue.scc_get_last_error_message(mydbc));
-            results.put(result);
+            batchResults.startNewEntry();
+            batchResults.entryPutFieldAsInteger("status", 1); // SQLite ERROR 1
+            batchResults.entryPutFieldAsString("message",
+            SCCoreGlue.scc_get_last_error_message(mydbc));
+            batchResults.putNewEntry();
             SCCoreGlue.scc_end_statement(mydbc);
             continue;
           }
@@ -62,65 +84,60 @@ public class SQLiteBatchCore {
           if (stepResult == 100) {
             final int columnCount = SCCoreGlue.scc_get_column_count(mydbc);
 
-            JSONArray columns = new JSONArray();
+            batchResults.startNewEntryWithRows();
 
             for (int j=0; j < columnCount; ++j) {
-              columns.put(SCCoreGlue.scc_get_column_name(mydbc, j));
+              batchResults.entryPutColumnName(SCCoreGlue.scc_get_column_name(mydbc, j));
             }
 
-            JSONArray rows = new JSONArray();
-
             do {
-              JSONArray row = new JSONArray();
+              batchResults.startEntryRow();
 
               for (int col=0; col < columnCount; ++col) {
                 final int type = SCCoreGlue.scc_get_column_type(mydbc, col);
 
                 if (type == SCCoreGlue.SCC_COLUMN_TYPE_INTEGER ||
                     type == SCCoreGlue.SCC_COLUMN_TYPE_FLOAT) {
-                  row.put(SCCoreGlue.scc_get_column_double(mydbc, col));
+                  batchResults.entryPutRowValueAsDouble(
+                    SCCoreGlue.scc_get_column_double(mydbc, col));
                 } else if (type == SCCoreGlue.SCC_COLUMN_TYPE_NULL) {
-                  row.put(JSONObject.NULL);
+                  batchResults.entryPutRowValueAsNull();
                 } else {
-                  row.put(SCCoreGlue.scc_get_column_text(mydbc, col));
+                  batchResults.entryPutRowValueAsString(
+                    SCCoreGlue.scc_get_column_text(mydbc, col));
                 }
               }
 
-              rows.put(row);
+              batchResults.entryPutRow();
 
               stepResult = SCCoreGlue.scc_step(mydbc);
             } while (stepResult == 100);
 
-            JSONObject result = new JSONObject();
-            result.put("status", 0); // REPORT SQLite OK
-            result.put("columns", columns);
-            result.put("rows", rows);
-            results.put(result);
+            batchResults.putNewEntryWithRows();
             SCCoreGlue.scc_end_statement(mydbc);
           } else if (stepResult == 101) {
             int totalChanges = SCCoreGlue.scc_get_total_changes(mydbc);
             int rowsAffected = totalChanges - previousTotalChanges;
 
-            JSONObject result = new JSONObject();
+            batchResults.startNewEntry();
             // same order as iOS & macOS ("osx"):
-            result.put("status", 0); // REPORT SQLite OK
-            result.put("totalChanges", totalChanges);
-            result.put("rowsAffected", rowsAffected);
-            result.put("lastInsertRowId",
+            batchResults.entryPutFieldAsInteger("status", 0); // SQLite OK
+            batchResults.entryPutFieldAsInteger("totalChanges", totalChanges);
+            batchResults.entryPutFieldAsInteger("rowsAffected", rowsAffected);
+            batchResults.entryPutFieldAsInteger("lastInsertRowId",
               SCCoreGlue.scc_get_last_insert_rowid(mydbc));
-            results.put(result);
+            batchResults.putNewEntry();
             SCCoreGlue.scc_end_statement(mydbc);
           } else {
-            JSONObject result = new JSONObject();
-            result.put("status", 1); // REPORT SQLite ERROR 1
-            result.put("message", SCCoreGlue.scc_get_last_error_message(mydbc));
-            results.put(result);
+            batchResults.startNewEntry();
+            batchResults.entryPutFieldAsInteger("status", 1); // SQLite ERROR 1
+            batchResults.entryPutFieldAsString("message",
+              SCCoreGlue.scc_get_last_error_message(mydbc));
+            batchResults.putNewEntry();
             SCCoreGlue.scc_end_statement(mydbc);
           }
         }
       }
-
-      return results;
     } catch(Exception e) {
       // NOT EXPECTED - internal error:
       throw new RuntimeException(e);
