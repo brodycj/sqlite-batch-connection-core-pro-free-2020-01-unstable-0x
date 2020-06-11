@@ -105,16 +105,17 @@ Java_io_sqlc_SCCoreGlue_scc_1bind_1text16__IILjava_lang_String_2I(JNIEnv *env, j
   const char* _strchars_text = NULL;
   int _res;
   if ( NULL != text ) {
-    _strchars_text = (*env)->GetStringUTFChars(env, text, (jboolean*)NULL);
+    _strchars_text = (*env)->GetStringChars(env, text, (jboolean*)NULL);
   if ( NULL == _strchars_text ) {
       (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/OutOfMemoryError"),
                        "Failed to get UTF-8 chars for argument \"text\" in native dispatcher for \"scc_bind_text16\"");
       return 0;
     }
   }
-  _res = scc_bind_text16((int) connection_id, (int) index, (void *) _strchars_text, (int) length);
+  // _res = scc_bind_text16((int) connection_id, (int) index, (void *) _strchars_text, (int) length);
+  _res = scc_bind_text16((int) connection_id, (int) index, (void *) _strchars_text, (int) (*env)->GetStringLength(env, text) * 2);
   if ( NULL != text ) {
-    (*env)->ReleaseStringUTFChars(env, text, _strchars_text);
+    (*env)->ReleaseStringChars(env, text, _strchars_text);
   }
   return _res;
 }
