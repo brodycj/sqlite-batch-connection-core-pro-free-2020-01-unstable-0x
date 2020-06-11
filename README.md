@@ -46,6 +46,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ### General limitations
 
+- Not tested with `u0000` character
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
 - Not able to close database connection and release internal resources.
 - Hard limit of 1000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building (low-level)
