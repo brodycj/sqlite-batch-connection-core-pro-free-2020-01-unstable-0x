@@ -83,7 +83,7 @@ static int test_open_file_connection(const char * test, const char * name) {
   return test_open_connection(test, name, flags);
 }
 
-static void test01() {
+static void test_01() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -102,7 +102,7 @@ static void test01() {
     );
 }
 
-static void test02() {
+static void test_02() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -123,7 +123,7 @@ static void test02() {
     );
 }
 
-static void test03() {
+static void test_03() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -162,7 +162,7 @@ static void test03() {
     );
 }
 
-static void test04() {
+static void test_04() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -200,7 +200,7 @@ static void test04() {
     );
 }
 
-static void test05() {
+static void test_05() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -260,7 +260,7 @@ static void test05() {
     );
 }
 
-static void test06() {
+static void test_06() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -324,7 +324,7 @@ static void test06() {
     );
 }
 
-static void test07() {
+static void test_07() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -383,7 +383,7 @@ static void test07() {
     );
 }
 
-static void test08() {
+static void test_08() {
   const int connection_id = test_open_memory_connection(__func__);
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
@@ -442,8 +442,8 @@ static void test08() {
     );
 }
 
-static void test11() {
-  const int connection_id = test_open_file_connection(__func__, "test11.db");
+static void test_11() {
+  const int connection_id = test_open_file_connection(__func__, "test_11.db");
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -586,8 +586,8 @@ static void test11() {
   }
 }
 
-static void test12() {
-  const int connection_id = test_open_file_connection(__func__, "test12.db");
+static void test_12() {
+  const int connection_id = test_open_file_connection(__func__, "test_12.db");
 
   TEST_ASSERT_ALWAYS(connection_id > 0);
 
@@ -698,7 +698,7 @@ static void test12() {
   }
 }
 
-static void test21() {
+static void test_21() {
   // INCORRECT call with incorrect flags:
   const int connection_id = test_open_connection(__func__, "dummy.db", 0);
   // EXPECTED to indicate an error:
@@ -707,15 +707,18 @@ static void test21() {
 
 int main(int argc, char ** argv) {
   test_init();
-  test01();
-  test02();
-  test03();
-  test04();
-  test05();
-  test06();
-  test07();
-  test08();
-  test11();
-  test12();
-  test21();
+
+  test_01();
+  test_02();
+  test_03();
+  test_04();
+  test_05();
+  test_06();
+  test_07();
+  test_08();
+
+  test_11();
+  test_12();
+
+  test_21();
 }
