@@ -41,9 +41,11 @@
 
 - (void) executeBatch: (CDVInvokedUrlCommand *) commandInfo
 {
-  // Background threading may be added at some point in the future
-  // (expected to be straightforward for both Android & iOS)
-  [self executeBatchNow: commandInfo];
+  // execute in background
+  dispatch_async(
+    dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      [self executeBatchNow: commandInfo];
+    });
 }
 
 - (void) executeBatchNow: (CDVInvokedUrlCommand *) commandInfo
