@@ -42,12 +42,6 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
   - `cordova-sqlite-demo-plugin` - extremely simple Cordova plugin that can open a SQLite database, execute a set of batch statements with parameters, and send the results to the Cordova JavaScript app, now with background processing
 - with some other top-level Makefile artifacts included
 
-## Major features
-
-- The API is designed to work with an integer connection ID that is easy to use from higher-level library packages for frameworks such as Apache Cordova and React Native.
-- Reports the last insert row ID and total number of changes which are needed to help match some of the capabilities of the *deprecated draft* Web SQL specification.
-- Includes some extremely rudimentary error handling.
-
 ## Some known limitations
 
 - Not tested with `u0000` character
