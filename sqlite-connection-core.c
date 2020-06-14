@@ -172,6 +172,27 @@ int scc_bind_text(int connection_id, int index, const char * text)
   }
 }
 
+int scc_bind_text_utf16_bytes(int connection_id, int index, void * text, int length)
+{
+  if (connection_id < 0) {
+    return 21; // SQLite abuse
+  } else {
+    scc_record_ref r = &scc_record_list[connection_id];
+    sqlite3_stmt * st;
+    int rc;
+
+    START_REC_ST_MUTEX(r);
+    st = r->_st;
+    if (st == NULL) {
+      rc = 21; // SQLite abuse
+    } else {
+      rc = sqlite3_bind_text16(st, index, text, length, SQLITE_TRANSIENT);
+    }
+    END_REC_ST_MUTEX(r);
+    return rc;
+  }
+}
+
 int scc_bind_double(int connection_id, int index, double value)
 {
   if (connection_id < 0) {
