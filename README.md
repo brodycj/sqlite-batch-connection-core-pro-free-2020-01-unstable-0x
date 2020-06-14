@@ -1,8 +1,8 @@
-# SQLite batch connection core 2020-01
+# SQLite batch connection core pro-free 2020-001
 
 **Author:** Christopher J. Brody <mailto:chris.brody+brodybits@gmail.com>
 
-**License:** MIT with commercial license option available
+**License:** GPL v3 with commercial license option available
 
 **IMPORTANT UPGRADE NOTICE:** It is highly recommended to avoid breaking schema changes, database file name changes, and database directory path changes. Upgrades need to account for any old schema versions and database file paths that may still be in use. It is possible for users to upgrade at any time, even after many years.
 
