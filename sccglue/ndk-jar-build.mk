@@ -7,12 +7,13 @@ include ../sqlite-download.mk
 
 include scclib.mk
 
+include java-build.mk
+
 ndkbuild: jar
 
-jar: $(SQLITE_AMALGAMATION)/sqlite3.c
+jar: $(SQLITE_AMALGAMATION)/sqlite3.c javac
 	ndk-build
 	cp -r libs lib
-	javac -d . java/io/sqlc/SCCoreGlue.java
 	jar cvf $(NDK_JAR_FILENAME) lib io
 
 ndkclean:

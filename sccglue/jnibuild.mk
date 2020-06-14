@@ -5,6 +5,8 @@ include ../sqLite-build.mk
 
 include scclib.mk
 
+include java-build.mk
+
 JNI_C_SOURCE := jni/sccglue_jni_all.c
 
 # JNI lib file for testing on macOS:
@@ -24,9 +26,9 @@ $(JNI_LIB_FILE): jnilib
 jnitestclean:
 	rm -rf test*.db
 
-jnitest: $(JNI_LIB_FILE) jnitestclean
+jnitest: $(JNI_LIB_FILE) jnitestclean javac
 	javac -sourcepath java java/SCCoreGlueTest.java
-	java -cp java SCCoreGlueTest
+	java -cp java:. SCCoreGlueTest
 
 jniclean: jnitestclean
 	rm -rf java/*.class
