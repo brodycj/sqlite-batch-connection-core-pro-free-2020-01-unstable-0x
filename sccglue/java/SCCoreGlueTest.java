@@ -34,22 +34,23 @@ class SCCoreGlueTest {
   }
 
   static int
-  testOpenConnection(final String test, final String name, final int flags) {
+  testOpenConnection(final String test, final String fullName, final int flags) {
     System.out.println(test);
 
-    return SCCoreGlue.scc_open_connection(name, flags);
+    return SCCoreGlue.scc_open_connection(fullName, flags);
   }
 
-  static int testOpenMemoryConnection(final String test) {
-    return testOpenConnection(test, ":memory:", 2);
+  static int testOpenMemoryConnection(final String testName) {
+    return testOpenConnection(testName, ":memory:", 2);
   }
 
-  static int testOpenFileConnection(final String test, final String name) {
-    return testOpenConnection(test, name, 6);
+  static int
+  testOpenFileConnection(final String testName, final String fileName) {
+    return testOpenConnection(testName, fileName, 6);
   }
 
-  static void test1() {
-    final int connection = testOpenMemoryConnection("test 1");
+  static void test_1() {
+    final int connection = testOpenMemoryConnection("test_1");
 
     assertTrue(connection > 0);
 
@@ -91,8 +92,8 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test2() {
-    final int connection = testOpenMemoryConnection("test 2");
+  static void test_2() {
+    final int connection = testOpenMemoryConnection("test_2");
 
     assertTrue(connection > 0);
 
@@ -157,8 +158,8 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test3() {
-    final int connection = testOpenMemoryConnection("test 3");
+  static void test_3() {
+    final int connection = testOpenMemoryConnection("test_3");
 
     assertTrue(connection > 0);
 
@@ -233,8 +234,8 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test4() {
-    final int connection = testOpenMemoryConnection("test 4");
+  static void test_4() {
+    final int connection = testOpenMemoryConnection("test_4");
 
     assertTrue(connection > 0);
 
@@ -332,8 +333,8 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test5() {
-    final int connection = testOpenMemoryConnection("test 5");
+  static void test_5() {
+    final int connection = testOpenMemoryConnection("test_5");
 
     assertTrue(connection > 0);
 
@@ -357,8 +358,8 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test6() {
-    final int connection = testOpenMemoryConnection("test 6");
+  static void test_6() {
+    final int connection = testOpenMemoryConnection("test_6");
 
     assertTrue(connection > 0);
 
@@ -379,8 +380,8 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test11() {
-    final int connection = testOpenFileConnection("test 11", "test11.db");
+  static void test_11() {
+    final int connection = testOpenFileConnection("test_11", "test_11.db");
 
     assertTrue(connection > 0);
 
@@ -449,7 +450,7 @@ class SCCoreGlueTest {
 
     assertEquals(0, // SQLite OK
       SCCoreGlue.scc_begin_statement(connection,
-        "INSERT INTO Testing VALUES ('test data')"
+        "INSERT INTO Testing VALUES ('test_ data')"
         )
       );
 
@@ -483,7 +484,7 @@ class SCCoreGlueTest {
 
     assertEquals(0, // SQLite OK
       SCCoreGlue.scc_begin_statement(connection,
-        "INSERT INTO Testing VALUES ('test 2')"
+        "INSERT INTO Testing VALUES ('test_ 2')"
         )
       );
 
@@ -500,7 +501,7 @@ class SCCoreGlueTest {
 
     assertEquals(0, // SQLite OK
       SCCoreGlue.scc_begin_statement(connection,
-        "INSERT INTO Testing VALUES ('test 3')"
+        "INSERT INTO Testing VALUES ('test_ 3')"
         )
       );
 
@@ -516,22 +517,24 @@ class SCCoreGlueTest {
       );
   }
 
-  static void test21() {
+  static void test_21() {
     // INCORRECT call with incorrect flags:
-    final int connection = testOpenConnection("test 21", "dummy.db", 0);
+    final int connection = testOpenConnection("test_21", "dummy.db", 0);
     // EXPECTED to indicate an error:
     assertTrue(connection < 0);
   }
 
   public static void main(String [] args) {
-    test1();
-    test2();
-    test3();
-    test4();
-    test5();
-    test6();
-    test11();
-    test21();
+    test_1();
+    test_2();
+    test_3();
+    test_4();
+    test_5();
+    test_6();
+
+    test_11();
+
+    test_21();
   }
 
   static {
