@@ -44,19 +44,26 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ## Some known limitations
 
+### General limitations
+
 - Not tested with `u0000` character
-- When using the low-level C or Java API, the required `scc_init()` API initialization function which is NOT thread-safe **must** be called from the main thread upon startup. (This is automatically done by the batch processing classes for Android and iOS.)
-- When using the low-level Java API, `System.loadLibrary()` **must** be used to load the JNI implementation before calling any API functions including `scc_init()`, as shown in the Java API sample below. (This is automatically done by the `io.sqlc.SQLiteBatchCore` class on Android.)
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
-- 64-bit integer values are not supported by the SQLiteBatchCore classes for Android and iOS. The Cordova demo is tested with integer values up to 52-bits (signed).
-- For Apache Cordova, a helper plugin such as `cordova-sqlite-storage-file` (recommended) or `cordova-plugin-file` (recommended for external filesystem access on Android) should be used to resolve an absolute database file path before opening it. Similar helper components would be recommended on React Native.
-- not able to close database connection and release internal resources
-- hard limit of 1000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building
+- Not able to close database connection and release internal resources.
+- Hard limit of 1000 open SQLite database connections, which can be changed by defining `SCC_MAXIMUM_CONNECTIONS` to configure the hard limit when building (low-level)
 - The API was not designed to support parallel database access through the same database connection. For parallel database access it is recommended to open multiple SQLite connections to the same database file name.
 - A limited number of historical SQLite features are disabled since the `SQLITE_DBCONFIG_DEFENSIVE` option is enabled (unless `NO_SCC_DBCONFIG_DEFENSIVE` is defined when building) ref: <https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive>
 - Background threading would need to be done in a higher-level component, which should be straightforward on both Android and iOS, as now demonstrated in the Cordova demo plugin.
-- The `sqlite-connection-core.h` API header file and Java interface class have very limited documentation comments.
 - Formal documentation of the API is missing here.
+
+### Limitations of low-level API
+
+- When using the low-level C or Java API, the required `scc_init()` API initialization function which is NOT thread-safe **must** be called from the main thread upon startup. (This is automatically done by the batch processing classes for Android and iOS.)
+- When using the low-level Java API, `System.loadLibrary()` **must** be used to load the JNI implementation before calling any API functions including `scc_init()`, as shown in the Java API sample below. (This is automatically done by the `io.sqlc.SQLiteBatchCore` class on Android.)
+
+### Limitations of higher-level classes
+
+- For Apache Cordova, a helper plugin such as `cordova-sqlite-storage-file` (recommended) or `cordova-plugin-file` (recommended for external filesystem access on Android) should be used to resolve an absolute database file path before opening it. Similar helper components would be recommended on React Native.
+- The `sqlite-connection-core.h` API header file and Java interface class have very limited documentation comments.
 - Missing both demonstration and formal documentation of SQLiteBatchCore class for Android and iOS, which is demonstrated in `cordova-sqlite-demo-plugin` subdirectory of `cordova-demo`.
 
 ## Samples
