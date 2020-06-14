@@ -50,6 +50,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ## Some known limitations
 
+- Not tested with `u0000` character
 - When using the low-level C or Java API, the required `scc_init()` API initialization function which is NOT thread-safe **must** be called from the main thread upon startup. (This is automatically done by the batch processing classes for Android and iOS.)
 - When using the low-level Java API, `System.loadLibrary()` **must** be used to load the JNI implementation before calling any API functions including `scc_init()`, as shown in the Java API sample below. (This is automatically done by the `io.sqlc.SQLiteBatchCore` class on Android.)
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
