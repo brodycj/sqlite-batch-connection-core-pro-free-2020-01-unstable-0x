@@ -46,7 +46,7 @@ with support available here: <https://github.com/brodybits/ask-me-anything/issue
 
 ### General limitations
 
-- Not tested with `u0000`
+- Not tested with `u0000` character in SQL statement or result data
 - Not tested with emojis or other 4-byte UTF-8 characters
 - Not tested with `Infinity`, `-Infinity`, or `NaN` values.
 - Not able to close database connection and release internal resources.
@@ -551,7 +551,13 @@ results from cache database file demo:
 ]
 ```
 
-Note that results of the `u0000` character demo may depend on the platform at this point.
+results from test with `u0000` character:
+
+```json
+[{ "status": 0, "columns": ["HEX(?)"], "rows": [["6162630100646566"]] }]
+```
+
+(This result shows ability to bind text parameter with `u0000` character, as needed to properly support PouchDB collate functionality.)
 
 ## Testing
 
