@@ -26,6 +26,8 @@ int scc_begin_statement(int connection_id, const char * statement);
 
 int scc_bind_text(int connection_id, int index, const char * text);
 
+int scc_bind_text_utf8_bytes(int connection_id, int index, void * text, int length);
+
 int scc_bind_text_utf16_bytes(int connection_id, int index, void * text, int length);
 
 int scc_bind_double(int connection_id, int index, double value);

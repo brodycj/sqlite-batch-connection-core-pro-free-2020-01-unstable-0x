@@ -708,7 +708,7 @@ static void test_u0000_01() {
     );
 
   TEST_ASSERT_INT_EQUALS(0, // SQLite OK
-    scc_bind_text(connection_id, 1, "Test\001\000123")
+    scc_bind_text_utf8_bytes(connection_id, 1, "Test\001\000123", 9)
     );
 
   TEST_ASSERT_INT_EQUALS(100, // SQLite rows
@@ -723,7 +723,7 @@ static void test_u0000_01() {
     scc_get_column_name(connection_id, 0)
     );
 
-  TEST_ASSERT_STRING_EQUALS("5465737401",
+  TEST_ASSERT_STRING_EQUALS("546573740100313233",
     scc_get_column_text(connection_id, 0)
     );
 
