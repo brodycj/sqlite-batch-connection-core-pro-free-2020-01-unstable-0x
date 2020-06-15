@@ -551,7 +551,11 @@ results from cache database file demo:
 ]
 ```
 
-Note that results of the `u0000` character demo may depend on the platform.
+results from test with `u0000` character:
+
+```json
+[{ "status": 0, "columns": ["HEX(?)"], "rows": [["6162630100646566"]] }]
+```
 
 ## Testing
 
