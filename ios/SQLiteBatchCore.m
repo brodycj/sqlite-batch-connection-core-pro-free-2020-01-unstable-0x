@@ -42,8 +42,10 @@
           prepareResult = scc_bind_double(connection_id, 1 + j,
             [(NSNumber *)bindValue doubleValue]);
         } else if ([bindValue isKindOfClass: [NSString class]]) {
-          prepareResult = scc_bind_text(connection_id, 1 + j,
-              [(NSString *)bindValue cString]);
+          NSString * bindText = (NSString *)bindValue;
+          prepareResult = scc_bind_text_utf8_bytes(connection_id, 1 + j,
+              [bindText cString],
+	      [bindText lengthOfBytesUsingEncoding: NSUTF8StringEncoding]);
         } else {
           prepareResult = scc_bind_null(connection_id, 1 + j);
         }
