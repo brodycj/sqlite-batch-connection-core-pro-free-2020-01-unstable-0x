@@ -698,6 +698,44 @@ static void test_12() {
   }
 }
 
+static void test_u0000_01() {
+  const int connection_id = test_open_memory_connection(__func__);
+
+  TEST_ASSERT_ALWAYS(connection_id > 0);
+
+  TEST_ASSERT_INT_EQUALS(0, // SQLite OK
+    scc_begin_statement(connection_id, "SELECT HEX(?) AS myResult")
+    );
+
+  TEST_ASSERT_INT_EQUALS(0, // SQLite OK
+    scc_bind_text(connection_id, 1, "Test\001\000123")
+    );
+
+  TEST_ASSERT_INT_EQUALS(100, // SQLite rows
+    scc_step(connection_id)
+    );
+
+  TEST_ASSERT_INT_EQUALS(1,
+    scc_get_column_count(connection_id)
+    );
+
+  TEST_ASSERT_STRING_EQUALS("myResult",
+    scc_get_column_name(connection_id, 0)
+    );
+
+  TEST_ASSERT_STRING_EQUALS("5465737401",
+    scc_get_column_text(connection_id, 0)
+    );
+
+  TEST_ASSERT_INT_EQUALS(101, // SQLite done
+    scc_step(connection_id)
+    );
+
+  TEST_ASSERT_INT_EQUALS(0, // SQLite OK
+    scc_end_statement(connection_id)
+    );
+}
+
 static void test_21() {
   // INCORRECT call with incorrect flags:
   const int connection_id = test_open_connection(__func__, "dummy.db", 0);
@@ -721,4 +759,6 @@ int main(int argc, char ** argv) {
   test_12();
 
   test_21();
+
+  test_u0000_01();
 }
