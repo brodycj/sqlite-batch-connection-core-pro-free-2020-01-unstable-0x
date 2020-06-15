@@ -60,9 +60,10 @@ public class SQLiteBatchCore {
                 SCCoreGlue.scc_bind_double(mydbc, 1 + j,
                   batchData.getEntryBindColumnDouble(j));
             } else if (batchData.isEntryBindColumnString(j)) {
+              final String text = batchData.getEntryBindColumnString(j);
               bindResult =
-                SCCoreGlue.scc_bind_text(mydbc, 1 + j,
-                  batchData.getEntryBindColumnString(j));
+                SCCoreGlue.scc_bind_text_utf16_bytes(mydbc, 1 + j,
+                  text, text.length() * 2);
             } else {
               bindResult =
                 SCCoreGlue.scc_bind_null(mydbc, 1 + j);
