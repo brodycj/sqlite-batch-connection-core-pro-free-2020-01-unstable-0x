@@ -524,6 +524,47 @@ class SCCoreGlueTest {
     assertTrue(connection < 0);
   }
 
+  static void test_u0000_01() {
+    final int connection = testOpenMemoryConnection("test u0000 01");
+
+    assertTrue(connection > 0);
+
+    assertEquals(0, // SQLite OK
+      SCCoreGlue.scc_begin_statement(connection,
+        "SELECT HEX(?)"
+        )
+      );
+
+    assertEquals(0, // SQLite OK
+      SCCoreGlue.scc_bind_text(connection, 1, "abc\u0001\u0000def")
+      );
+
+    assertEquals(100, // SQLite rows
+      SCCoreGlue.scc_step(connection)
+      );
+
+    assertEquals(1,
+      SCCoreGlue.scc_get_column_count(connection)
+      );
+
+    final String columnName = SCCoreGlue.scc_get_column_name(connection, 0);
+    assertEquals(columnName, "HEX(?)");
+
+    final int columnType = SCCoreGlue.scc_get_column_type(connection, 0);
+    assertEquals(columnType, SCCoreGlue.SCC_COLUMN_TYPE_TEXT);
+
+    final String columnText = SCCoreGlue.scc_get_column_text(connection, 0);
+    assertEquals(columnText, "61626301C080646566"); // (Modified UTF-8 result)
+
+    assertEquals(101, // SQLite done
+      SCCoreGlue.scc_step(connection)
+      );
+
+    assertEquals(0, // SQLite OK
+      SCCoreGlue.scc_end_statement(connection)
+      );
+  }
+
   public static void main(String [] args) {
     test_1();
     test_2();
@@ -535,6 +576,8 @@ class SCCoreGlueTest {
     test_11();
 
     test_21();
+
+    test_u0000_01();
   }
 
   static {
