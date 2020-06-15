@@ -29,6 +29,7 @@ regen: $(GLUEGENTOOLS_PATH)
 	$(GLUEGEN_FIX_JAVA_COMMAND)
 	$(GLUEGEN_REMOVE_JAVA_ORIG)
 	$(GLUEGEN_FIX_JNI_COMMAND)
+	patch -p2 < glue.patch
 	$(GLUEGEN_REMOVE_JNI_ORIG)
 
 glue-regen-distclean:
