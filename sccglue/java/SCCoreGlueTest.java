@@ -536,7 +536,7 @@ class SCCoreGlueTest {
       );
 
     assertEquals(0, // SQLite OK
-      SCCoreGlue.scc_bind_text(connection, 1, "abc\u0001\u0000def")
+      SCCoreGlue.scc_bind_text_utf16_bytes(connection, 1, "abc\u0001\u0000def", 16)
       );
 
     assertEquals(100, // SQLite rows
@@ -554,7 +554,7 @@ class SCCoreGlueTest {
     assertEquals(columnType, SCCoreGlue.SCC_COLUMN_TYPE_TEXT);
 
     final String columnText = SCCoreGlue.scc_get_column_text(connection, 0);
-    assertEquals(columnText, "61626301C080646566"); // (Modified UTF-8 result)
+    assertEquals(columnText, "6162630100646566");
 
     assertEquals(101, // SQLite done
       SCCoreGlue.scc_step(connection)
