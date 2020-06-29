@@ -28,7 +28,7 @@ with demonstration of use in an extremely simple Cordova plugin for mobile apps 
 
 designed to be thread-safe
 
-with support available here: <https://github.com/brodybits/ask-me-anything/issues>
+with support available here: [github.com / brodybits / ask-me-anything / issues](https://github.com/brodybits/ask-me-anything/issues)
 
 ## Contents
 
