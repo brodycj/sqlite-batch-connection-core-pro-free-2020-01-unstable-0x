@@ -340,7 +340,27 @@ function openCacheFileDatabaseConnection (name, openCallback, errorCallback) {
 
 function onReady () {
   log('deviceready event received')
-  startMemoryDatabaseDemo()
+  showSQLiteVersion()
+}
+
+function showSQLiteVersion () {
+  openMemoryDatabaseConnection(
+    function (id) {
+      log('memory database connection id: ' + id)
+
+      window.sqliteBatchConnection.executeBatch(
+        id,
+        [['SELECT SQLITE_VERSION()', []]],
+        function (results) {
+          log(JSON.stringify(results))
+          startMemoryDatabaseDemo()
+        }
+      )
+    },
+    function (error) {
+      log('UNEXPECTED OPEN DATABASE ERROR: ' + error)
+    }
+  )
 }
 
 function startMemoryDatabaseDemo () {
@@ -473,6 +493,8 @@ function startCacheFileDemo () {
 ```
 
 #### expected Cordova batch results
+
+`SELECT SQLITE_VERSION()` should show the actual SQLite version used.
 
 results from memory database demo:
 
