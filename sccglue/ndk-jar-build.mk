@@ -12,6 +12,7 @@ include java-build.mk
 ndkbuild: jar
 
 jar: $(SQLITE_AMALGAMATION)/sqlite3.c javac
+	rm -rf lib libs
 	ndk-build
 	cp -r libs lib
 	jar cvf $(NDK_JAR_FILENAME) lib io
